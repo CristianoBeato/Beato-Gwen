@@ -8,7 +8,7 @@
 #ifndef GWEN_CONTROLS_TEXT_H
 #define GWEN_CONTROLS_TEXT_H
 
-#include "Gwen/BaseRender.h"
+#include "Gwen/Renderers/BaseRender.h"
 #include "Gwen/Controls/Base.h"
 
 namespace Gwen

@@ -10,7 +10,7 @@
 
 #include "Gwen/Gwen.h"
 #include "Gwen/Controls/Base.h"
-#include "Gwen/BaseRender.h"
+#include "Gwen/Renderers/BaseRender.h"
 #include "Gwen/Texture.h"
 
 namespace Gwen
@@ -49,22 +49,22 @@ namespace Gwen
 
 				virtual TextObject & GetImage()
 				{
-					return m_Texture.name;
+					return m_Texture.getName();
 				}
 
 				virtual int TextureWidth()
 				{
-					return m_Texture.width;
+					return m_Texture.getWidth();
 				}
 
 				virtual int TextureHeight()
 				{
-					return m_Texture.height;
+					return m_Texture.getHeight();
 				}
 
 				virtual const TextObject & GetImageName()
 				{
-					return m_Texture.name;
+					return m_Texture.getName();
 				}
 
 				virtual void Render( Skin::Base* skin )
@@ -74,12 +74,12 @@ namespace Gwen
 					if ( m_bStretch )
 					{ skin->GetRender()->DrawTexturedRect( &m_Texture, GetRenderBounds(), m_uv[0], m_uv[1], m_uv[2], m_uv[3] ); }
 					else
-					{ skin->GetRender()->DrawTexturedRect( &m_Texture, Gwen::Rect( 0, 0, m_Texture.width, m_Texture.height ), m_uv[0], m_uv[1], m_uv[2], m_uv[3] ); }
+					{ skin->GetRender()->DrawTexturedRect( &m_Texture, Gwen::Rect( 0, 0, m_Texture.getWidth(), m_Texture.getHeight()), m_uv[0], m_uv[1], m_uv[2], m_uv[3] ); }
 				}
 
 				virtual void SizeToContents()
 				{
-					SetSize( m_Texture.width, m_Texture.height );
+					SetSize( m_Texture.getHeight(), m_Texture.getHeight());
 				}
 
 				virtual void SetDrawColor( Gwen::Color color )

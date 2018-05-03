@@ -1,18 +1,42 @@
 /*
-	GWEN
-	Copyright (c) 2010 Facepunch Studios
-	See license in Gwen.h
+===========================================================================
+GWEN
+
+Copyright (c) 2010 Facepunch Studios
+Copyright (c) 2017-2018 Cristiano Beato
+
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+===========================================================================
 */
 
-#pragma once
 #ifndef GWEN_SKIN_H
 #define GWEN_SKIN_H
 
-#include "Gwen/BaseRender.h"
+#include "Gwen/TextObject.h"
 #include "Gwen/Font.h"
 
 namespace Gwen
 {
+	//foward definitions 
+	class TextObject;
 	namespace Controls
 	{
 		class Base;
@@ -28,30 +52,18 @@ namespace Gwen
 			static const unsigned char Dot				= 3;
 		}
 
+		//base skin class
 		class GWEN_EXPORT Base
 		{
 			public:
 
-				Base( Gwen::Renderer::Base* renderer = NULL )
-				{
-					m_DefaultFont.facename = L"Arial";
-					m_DefaultFont.size = 10.0f;
-					m_Render = renderer;
-				}
+				Base(Gwen::Renderer::Base* renderer = NULL);
 
-				virtual ~Base()
-				{
-					ReleaseFont( &m_DefaultFont );
-				}
+				virtual ~Base(void);
 
-				virtual void ReleaseFont( Gwen::Font* fnt )
-				{
-					if ( !fnt ) { return; }
+				virtual void Init(const TextObject & TextureName);
 
-					if ( !m_Render ) { return; }
-
-					m_Render->FreeFont( fnt );
-				}
+				virtual void ReleaseFont(Gwen::Font* fnt);
 
 				virtual void DrawGenericPanel( Controls::Base* control ) = 0;
 
@@ -59,7 +71,6 @@ namespace Gwen
 				virtual void DrawTabButton( Controls::Base* control, bool bActive, int dir ) = 0;
 				virtual void DrawTabControl( Controls::Base* control ) = 0;
 				virtual void DrawTabTitleBar( Controls::Base* control ) = 0;
-
 
 				virtual void DrawMenuItem( Controls::Base* control, bool bSubmenuOpen, bool bChecked ) = 0;
 				virtual void DrawMenuStrip( Controls::Base* control ) = 0;
@@ -117,6 +128,7 @@ namespace Gwen
 				{
 					m_Render = renderer;
 				}
+
 				virtual Gwen::Renderer::Base* GetRender()
 				{
 					return m_Render;
@@ -236,7 +248,7 @@ namespace Gwen
 
 			public:
 
-				virtual Gwen::Font* GetDefaultFont()
+				virtual Gwen::Font* GetDefaultFont(void)
 				{
 					return &m_DefaultFont;
 				}
@@ -245,12 +257,13 @@ namespace Gwen
 				{
 					m_DefaultFont.facename = strFacename;
 					m_DefaultFont.size = fSize;
+					m_DefaultFont.Load(GetRender());
 				}
 
 			protected:
-
-				Gwen::Font m_DefaultFont;
-				Gwen::Renderer::Base* m_Render;
+				Gwen::TextObject		m_DefaltTexture;
+				Gwen::Font				m_DefaultFont;
+				Gwen::Renderer::Base*	m_Render;
 
 		};
 	};

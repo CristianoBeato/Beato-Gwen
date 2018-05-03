@@ -13,31 +13,28 @@
 #define NOMINMAX
 #endif
 #include <windows.h>
-
-
 #define GwenUtil_OutputDebugCharString( lpOutputString ) OutputDebugStringA( lpOutputString )
 #define GwenUtil_OutputDebugWideString( lpOutputString ) OutputDebugStringW( lpOutputString )
 //#define GwenUtil_WideStringToFloat( _Str ) _wtof( _Str )
-
 #elif defined(__APPLE__)
-
 #include <CoreFoundation/CoreFoundation.h>
 #define GwenUtil_OutputDebugCharString( lpOutputString ) //printf( lpOutputString )
 #define GwenUtil_OutputDebugWideString( lpOutputString ) //wprintf( lpOutputString  )
 //#define GwenUtil_WideStringToFloat( _Str ) wcstof(_Str, NULL)
-
 #elif defined(__linux__)
-
 #define GwenUtil_OutputDebugCharString( lpOutputString ) //printf( lpOutputString )
 #define GwenUtil_OutputDebugWideString( lpOutputString ) //wprintf( lpOutputString  )
 //#define GwenUtil_WideStringToFloat( _Str ) wcstof(_Str, NULL)
-
 #else
-
 #error MUST_IMPLEMENT_PLATFORM
-
 #endif
 
+
+#define loop(v,m) for(int v = 0; v<int(m); v++)
+#define loopi(m) loop(i,m)
+#define loopj(m) loop(j,m)
+#define loopk(m) loop(k,m)
+#define loopl(m) loop(l,m)
 
 namespace Gwen
 {

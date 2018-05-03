@@ -2,6 +2,8 @@
 	GWEN
 
 	Copyright (c) 2010 Facepunch Studios
+	Copyright (c) 2017-2018 Cristiano Beato
+
 
 	MIT License
 
@@ -24,7 +26,6 @@
 	THE SOFTWARE.
 */
 
-#pragma once
 #ifndef GWEN_GWEN_H
 #define GWEN_GWEN_H
 
@@ -42,6 +43,14 @@
 #include "Gwen/Controls/Base.h"
 #include "Gwen/Controls/Canvas.h"
 #include "Gwen/Align.h"
+
+//
+//#include "Gwen/Skins/SkinBase.h"
+
+//SDL 2 Specific platform
+#include "Gwen/Input/SDL2.h"
+#include "Gwen/Renderers/SDL2.h"
+#include "Gwen/Platforms/Platform.h"
 
 // Enable the hook system (se Hook.h)
 #define GWEN_HOOKSYSTEM
@@ -88,13 +97,12 @@ namespace Gwen
 
 	namespace Input
 	{
-		inline void Blur()
+		inline void Blur(void)
 		{
 			if ( KeyboardFocus )
 			{ KeyboardFocus->Blur(); }
 		}
 	}
-
 } //namespace Gwen
 
 #endif

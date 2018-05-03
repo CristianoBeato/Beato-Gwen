@@ -8,7 +8,7 @@
 #ifndef GWEN_CONTROLS_MENUITEM_H
 #define GWEN_CONTROLS_MENUITEM_H
 
-#include "Gwen/BaseRender.h"
+#include "Gwen/Renderers/BaseRender.h"
 #include "Gwen/Controls/Base.h"
 #include "Gwen/Controls/Button.h"
 #include "Gwen/Controls/Menu.h"

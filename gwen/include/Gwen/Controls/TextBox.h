@@ -8,7 +8,7 @@
 #ifndef GWEN_CONTROLS_TEXTBOX_H
 #define GWEN_CONTROLS_TEXTOBX_H
 
-#include "Gwen/BaseRender.h"
+#include "Gwen/Renderers/BaseRender.h"
 #include "Gwen/Controls/Base.h"
 #include "Gwen/Controls/Label.h"
 #include "Gwen/Controls/ScrollControl.h"

@@ -10,52 +10,53 @@
 
 #include <string>
 
-#include "Gwen/BaseRender.h"
+#include "Gwen/Renderers/BaseRender.h"
 
 namespace Gwen
 {
-	//
 	// Texture
-	//
-	struct Texture
+	class Texture
 	{
-		typedef std::list<Texture*>		List;
+	public:
+		Texture(void);
+		~Texture(void){}
 
+		void	Load(const TextObject & str, Gwen::Renderer::Base* render);
+		void	Release(Gwen::Renderer::Base* render);
+		bool	FailedToLoad(void) const;
+		
+		//void gen image from pixel src 32 bit image
+		void	GenImage(Gwen::Renderer::Base* render, const byte*  src, int width, int height);
+
+		//get file size dir
+		TextObject		getName(void) const;
+		TextObject		&getName(void);
+
+		//get render image data
+		int				getWidth(void) const;
+		int				getHeight(void) const;
+		void*			getData(void) const;
+		int				&getWidth(void);
+		int				&getHeight(void);
+		void*			&getData(void);
+
+		//get image in renderer format
+		template<typename U> inline U* castData(void) const;
+
+	private:
+		typedef std::list<Texture*>		List;
 		TextObject	name;
 		void*	data;
 		bool	failed;
 		int		width;
 		int		height;
-
-		Texture()
-		{
-			data = NULL;
-			width = 4;
-			height = 4;
-			failed = false;
-		}
-
-		~Texture()
-		{
-		}
-
-		void Load( const TextObject & str, Gwen::Renderer::Base* render )
-		{
-			name = str;
-			Gwen::Debug::AssertCheck( render != NULL, "No renderer!" );
-			render->LoadTexture( this );
-		}
-
-		void Release( Gwen::Renderer::Base* render )
-		{
-			render->FreeTexture( this );
-		}
-
-		bool FailedToLoad() const
-		{
-			return failed;
-		}
 	};
+
+	template<typename U>
+	inline U * Texture::castData(void) const
+	{
+		return static_cast<U*>(this->data);
+	}
 
 }
 #endif

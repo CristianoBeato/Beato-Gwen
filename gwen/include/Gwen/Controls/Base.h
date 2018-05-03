@@ -14,7 +14,7 @@
 
 #include "Gwen/Exports.h"
 #include "Gwen/Structures.h"
-#include "Gwen/BaseRender.h"
+#include "Gwen/Renderers/BaseRender.h"
 #include "Gwen/Events.h"
 #include "Gwen/Utility.h"
 #include "Gwen/TextObject.h"

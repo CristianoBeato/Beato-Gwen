@@ -25,19 +25,20 @@ namespace Gwen
 
 				GWEN_CLASS( WindowCanvas, Controls::Canvas );
 
-				WindowCanvas( int x, int y, int w, int h, Gwen::Skin::Base* pRenderer, const Gwen::String & strWindowTitle = "" );
-				~WindowCanvas();
+				WindowCanvas( int x, int y, int w, int h,
+					Gwen::Skin::Base* pRenderer, 
+					const Gwen::String & strWindowTitle = "", 
+					unsigned int flags = 0 );
 
-				virtual void DoThink();
+				~WindowCanvas(void);
 
-				virtual bool WantsQuit() { return m_bQuit; }
+				virtual void DoThink(void);
 
 				// Gwen::WindowProvider
-				virtual void* GetWindow();
+				virtual void* GetWindow(void);
+				virtual bool InputQuit(void);
 
-				virtual bool InputQuit();
-
-				Skin::Base* GetSkin( void );
+				Skin::Base* GetSkin(void);
 
 				virtual void Render( Skin::Base* skin );
 
@@ -46,47 +47,91 @@ namespace Gwen
 
 				virtual void Layout( Skin::Base* skin );
 
-				virtual bool CanMaximize() { return m_bCanMaximize; }
+				virtual bool CanMaximize(void);
 				virtual void SetCanMaximize( bool b );
 				virtual void SetMaximize( bool b );
 
-				virtual void SetSizable( bool b ) { m_Sizer->SetHidden( !b ); }
-				virtual bool GetSizable() { return m_Sizer->Visible(); }
+				virtual void SetSizable(bool b);
+				virtual bool GetSizable(void);
 
 			protected:
 
-				virtual void RenderCanvas();
-				virtual void DestroyWindow();
-
-				virtual void CloseButtonPressed();
-				virtual void MaximizeButtonPressed();
-				virtual void MinimizeButtonPressed();
-
-				virtual void Dragger_Start();
-				virtual void Dragger_Moved();
-				virtual void Sizer_Moved();
-				virtual void OnTitleDoubleClicked();
-
-				void*		m_pOSWindow;
-				bool		m_bQuit;
+				virtual void RenderCanvas(void);
+				virtual void DestroyWindow(void);
+				virtual void Dragger_Start(void);
+				virtual void Dragger_Moved(void);
+				virtual void Sizer_Moved(void);
+				virtual void OnTitleDoubleClicked(void);
 
 				Gwen::Skin::Base*			m_pSkinChange;
+				Gwen::Point					m_WindowPos;
+				Gwen::Point					m_HoldPos;
 
-				ControlsInternal::Dragger*	m_TitleBar;
+				void*						m_pOSWindow;
+				bool						m_bCanMaximize;
+				bool						m_bIsMaximized;
+
 				ControlsInternal::Dragger*	m_Sizer;
-				Gwen::Controls::Label*		m_Title;
+		};
 
+		class GWEN_EXPORT CustomWindowCanvas : public Canvas, public Gwen::WindowProvider
+		{
+		public:
 
-				Gwen::Point		m_WindowPos;
-				Gwen::Point		m_HoldPos;
+			GWEN_CLASS(CustomWindowCanvas, Controls::Canvas);
 
-				bool			m_bCanMaximize;
-				bool			m_bIsMaximized;
+			CustomWindowCanvas(int x, int y, int w, int h, Gwen::Skin::Base* pRenderer, const Gwen::String & strWindowTitle = "", unsigned int flags = 0);
+			~CustomWindowCanvas(void);
 
-				Gwen::Controls::WindowCloseButton*		m_pClose;
-				Gwen::Controls::WindowMaximizeButton*	m_pMaximize;
-				Gwen::Controls::WindowMinimizeButton*	m_pMinimize;
+			virtual void DoThink(void);
+			
+			// Gwen::WindowProvider
+			virtual void* GetWindow(void);
+			
 
+			Skin::Base* GetSkin(void);
+
+			virtual void Render(Skin::Base* skin);
+			virtual void SetPos(int x, int y);
+			virtual bool IsOnTop(void);
+
+			virtual void Layout(Skin::Base* skin);
+
+			virtual bool CanMaximize(void);
+			virtual void SetCanMaximize(bool b);
+			virtual void SetMaximize(bool b);
+
+			virtual void SetSizable(bool b);
+			virtual bool GetSizable(void);
+
+		protected:
+			virtual void RenderCanvas(void);
+			virtual void DestroyWindow(void);
+
+			virtual void CloseButtonPressed(void);
+			virtual void MaximizeButtonPressed(void);
+			virtual void MinimizeButtonPressed(void);
+
+			virtual void Dragger_Start(void);
+			virtual void Dragger_Moved(void);
+			virtual void Sizer_Moved(void);
+			virtual void OnTitleDoubleClicked(void);
+
+			void*		m_pOSWindow;
+
+			Gwen::Skin::Base*						m_pSkinChange;
+
+			ControlsInternal::Dragger*				m_TitleBar;
+			ControlsInternal::Dragger*				m_Sizer;
+			Gwen::Controls::Label*					m_Title;
+
+			Gwen::Point								m_WindowPos;
+			Gwen::Point								m_HoldPos;
+			bool									m_bCanMaximize;
+			bool									m_bIsMaximized;
+			Gwen::Controls::WindowCloseButton*		m_pClose;
+			Gwen::Controls::WindowMaximizeButton*	m_pMaximize;
+			Gwen::Controls::WindowMinimizeButton*	m_pMinimize;
 		};
 	}
 }

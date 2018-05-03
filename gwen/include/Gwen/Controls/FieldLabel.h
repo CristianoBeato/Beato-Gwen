@@ -8,7 +8,7 @@
 #ifndef GWEN_CONTROLS_FIELDLABEL_H
 #define GWEN_CONTROLS_FIELDLABEL_H
 
-#include "Gwen/BaseRender.h"
+#include "Gwen/Renderers/BaseRender.h"
 #include "Gwen/Controls/Label.h"
 
 namespace Gwen

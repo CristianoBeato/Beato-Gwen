@@ -8,7 +8,7 @@
 #ifndef GWEN_CONTROLS_FOLDERPICKER_H
 #define GWEN_CONTROLS_FOLDERPICKER_H
 
-#include "Gwen/BaseRender.h"
+#include "Gwen/Renderers/BaseRender.h"
 #include "Gwen/Controls/Dialogs/FolderOpen.h"
 #include "Gwen/Controls/TextBox.h"
 

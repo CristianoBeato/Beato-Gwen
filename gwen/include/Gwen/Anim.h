@@ -9,7 +9,7 @@
 #define GWEN_ANIM_H
 #include "Gwen/Gwen.h"
 #include "Gwen/Controls/Base.h"
-#include "Gwen/Platform.h"
+#include "Gwen/Platforms/Platform.h"
 
 #ifndef GWEN_NO_ANIMATION
 

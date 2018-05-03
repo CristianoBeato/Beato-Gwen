@@ -158,7 +158,6 @@ namespace Gwen
 
 				std::list<handler> m_Handlers;
 		};
-
 	}
 
 }

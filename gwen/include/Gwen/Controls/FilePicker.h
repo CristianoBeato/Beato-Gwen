@@ -8,7 +8,7 @@
 #ifndef GWEN_CONTROLS_FILEPICKER_H
 #define GWEN_CONTROLS_FILEPICKER_H
 
-#include "Gwen/BaseRender.h"
+#include "Gwen/Renderers/BaseRender.h"
 #include "Gwen/Controls/Dialogs/FileOpen.h"
 #include "Gwen/Controls/TextBox.h"
 
