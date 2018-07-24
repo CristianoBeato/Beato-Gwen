@@ -4,8 +4,8 @@ file(GLOB GWEN_BUILDER_SOURCES *.cpp)
 source_group("" FILES ${GWEN_BUILDER_INCLUDES})
 source_group("" FILES ${GWEN_BUILDER_SOURCES})
 
-file(GLOB GWEN_BUILDER_CONTRIB_INCLUDES contrib/tinyxml/*.h)
-file(GLOB GWEN_BUILDER_CONTRIB_SOURCES contrib/tinyxml/*.cpp)
+file(GLOB GWEN_BUILDER_CONTRIB_INCLUDES contrib/tinyxml2/*.h)
+file(GLOB GWEN_BUILDER_CONTRIB_SOURCES contrib/tinyxml2/*.cpp)
 source_group("contrib" FILES ${GWEN_BUILDER_CONTRIB_INCLUDES})
 source_group("contrib" FILES ${GWEN_BUILDER_CONTRIB_SOURCES})
 

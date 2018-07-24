@@ -22,7 +22,6 @@
 #include "Gwen/ControlList.h"
 #include "Gwen/UserData.h"
 
-
 namespace Gwen
 {
 	namespace Pos
