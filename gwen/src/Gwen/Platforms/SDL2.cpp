@@ -223,8 +223,9 @@ Gwen::Platform::FileStream::~FileStream(void)
 
 bool Gwen::Platform::FileStream::open(const char * name, const char * mode)
 {
-	if (m_fileHandler) 
-		return false;
+	if (m_fileHandler)
+		close();
+		//	return false;
 
 	m_fileHandler = static_cast<void*>(SDL_RWFromFile(name, mode));
 	return m_fileHandler != NULL;

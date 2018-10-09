@@ -61,7 +61,9 @@ namespace Gwen
 
 				virtual ~Base(void);
 
-				virtual void Init(const TextObject & TextureName);
+				virtual bool Init(const TextObject & TextureName);
+
+				virtual void Clear(void);
 
 				virtual void ReleaseFont(Gwen::Font* fnt);
 
@@ -261,7 +263,6 @@ namespace Gwen
 				}
 
 			protected:
-				Gwen::TextObject		m_DefaltTexture;
 				Gwen::Font				m_DefaultFont;
 				Gwen::Renderer::Base*	m_Render;
 

@@ -113,10 +113,10 @@ source_group("Skins" FILES ${SKINS_INCLUDES})
 source_group("Skins" FILES ${SKINS_SOURCES})
 
 #contrib
-file(GLOB CONTRIB_TINYXML_INCLUDES src/contrib/tinyxml/*.h)
-file(GLOB CONTRIB_TINYXML_SOURCES src/contrib/tinyxml/*.cpp)
-source_group("contrib" FILES ${CONTRIB_TINYXML_INCLUDES})
-source_group("contrib" FILES ${CONTRIB_TINYXML_SOURCES})
+file(GLOB CONTRIB_TINYXML_INCLUDES src/contrib/tinyxml2/*.h)
+file(GLOB CONTRIB_TINYXML_SOURCES src/contrib/tinyxml2/*.cpp)
+source_group("contrib\\tinyxml2" FILES ${CONTRIB_TINYXML_INCLUDES})
+source_group("contrib\\tinyxml2" FILES ${CONTRIB_TINYXML_SOURCES})
 
 
 set(INC_GWEN
@@ -144,10 +144,11 @@ set( SRC_GWEN
 	${SKINS_SOURCES}
 )
 
-include_directories(${CMAKE_BINARY_DIR})
 include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/Gwen)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/Gwen)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src/contrib/tinyxml2)
+
 
 #set up precompiled Header
 if(USE_PRECOMPILED_HEADERS)

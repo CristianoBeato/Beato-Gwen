@@ -30,7 +30,7 @@ THE SOFTWARE.
 
 #include "Gwen/Gwen.h"
 #include "Gwen/Platforms/Platform.h"
-//#include "contrib/tinyxml/tinyxml.h"
+//#include "contrib/tinyxml2/tinyxml.h"
 
 Gwen::formBuilder::formBuilder(void)
 {

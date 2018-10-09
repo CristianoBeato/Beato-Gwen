@@ -53,7 +53,7 @@
 #include "Gwen/Platforms/Platform.h"
 #include "Gwen/Controls/Base.h"
 
-#include "../contrib/tinyxml/tinyxml.h"
+//#include "../contrib/tinyxml/tinyxml.h"
 
 #endif // !_PRECOMPILED_H_
 

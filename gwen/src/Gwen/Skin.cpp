@@ -41,8 +41,9 @@ THE SOFTWARE.
 	good cross platform solution.
 */
 
-void Gwen::Skin::Base::Init(const TextObject & TextureName)
-{}
+bool Gwen::Skin::Base::Init(const TextObject & TextureName) { return false; }
+
+void Gwen::Skin::Base::Clear(void) { };
 
 void Gwen::Skin::Base::DrawArrowDown(Gwen::Rect rect)
 {

@@ -1,10 +1,39 @@
-#pragma once
+/*
+===========================================================================
+GWEN
+
+Copyright (c) 2010 Facepunch Studios
+Copyright (c) 2017-2018 Cristiano Beato
+
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+===========================================================================
+*/
 #ifndef GWEN_SKINS_BASE_H
 #define GWEN_SKINS_BASE_H
 
 #include "Gwen/Controls/Base.h"
 #include "Gwen/Texture.h"
 #include "Gwen/Skins/Texturing.h"
+
+#include <map>
 
 namespace Gwen
 {
@@ -15,8 +44,6 @@ namespace Gwen
 		public:
 			SkinBase(Renderer::Base* renderer);
 			~SkinBase(void);
-
-			Texture m_Texture;
 
 			struct Textures_t
 			{
@@ -277,7 +304,8 @@ namespace Gwen
 
 			} Textures;
 
-			virtual void Init(const TextObject & SkinXml);
+			virtual bool Init(const TextObject & SkinXml);
+			virtual void Clear(void);
 			virtual void DrawButton(Controls::Base* control, bool bDepressed, bool bHovered, bool bDisabled);
 			virtual void DrawMenuItem(Controls::Base* control, bool bSubmenuOpen, bool bChecked);
 			virtual void DrawMenuStrip(Controls::Base* control);
@@ -324,9 +352,19 @@ namespace Gwen
 			void DrawCategoryInner(Controls::Base* ctrl, bool bCollapsed);
 
 		protected:
+//Beato begin:
+			//Texture m_Texture;
+			std::map<Uint16, Texture*>	m_skinTextures;
+//Beato end
+
+			void	LoadTexture(const String textName, String textPath);
+			Texture* GetTexture(String textName)const;
+
+			void	setTexture(Texturing::Bordered &texture, const tinyxml2::XMLElement* baseElement);
+			void	setTexture(Texturing::Single &texture, const tinyxml2::XMLElement* baseElement);
+			void	setColor(Gwen::Color &color, const tinyxml2::XMLElement* baseElement);
+
 			void	SetDefaltSkin(void);
-			void	LoadFont(const TextObject & fontname);
-			void	LoadTexture(const TextObject & textureName);
 		};
 	}
 }

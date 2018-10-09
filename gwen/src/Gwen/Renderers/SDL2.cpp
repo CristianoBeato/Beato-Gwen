@@ -324,10 +324,16 @@ namespace Gwen
 
 		Gwen::Color SDL::PixelColour(Gwen::Texture* pTexture, unsigned int x, unsigned int y, const Gwen::Color & col_default)
 		{
-			SDL_Rect clip = {x, y, 1, 1};
-			unsigned char pixels[4];
-			SDL_RenderReadPixels(m_RenderContext, &clip, 0, pixels, 0);
-			return Gwen::Color(pixels[0], pixels[1], pixels[2], pixels[3]);
+			//if (pTexture != nullptr)
+			//{
+				//SLOW AND WRONG 
+				//SDL_Rect clip = {x, y, 1, 1};
+				//unsigned char pixels[4];
+				//SDL_RenderReadPixels(m_RenderContext, &clip, 0, pixels, 0);
+				//return Gwen::Color(pixels[0], pixels[1], pixels[2], pixels[3]);
+			//}
+
+			return col_default;
 		}
 
 		bool SDL::InitializeContext(Gwen::WindowProvider* pWindow)
