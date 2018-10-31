@@ -35,6 +35,10 @@ THE SOFTWARE.
 
 #include <map>
 
+namespace tinyxml2
+{
+	class XMLElement;
+}
 namespace Gwen
 {
 	namespace Skin
@@ -47,11 +51,6 @@ namespace Gwen
 
 			struct Textures_t
 			{
-				Texturing::Bordered StatusBar;
-				Texturing::Bordered Selection;
-				Texturing::Bordered	Shadow;
-				Texturing::Bordered	Tooltip;
-
 				struct Panel_t
 				{
 					Texturing::Bordered Normal;
@@ -131,7 +130,6 @@ namespace Gwen
 					Texturing::Single Plus;
 
 				} Tree;
-
 
 				struct  ProgressBar_t
 				{
@@ -301,10 +299,17 @@ namespace Gwen
 				} CategoryList;
 
 				Texturing::Bordered GroupBox;
-
+				Texturing::Bordered StatusBar;
+				Texturing::Bordered Selection;
+				Texturing::Bordered	Shadow;
+				Texturing::Bordered	Tooltip;
 			} Textures;
-
-			virtual bool Init(const TextObject & SkinXml);
+//Beato Begin
+			//init skin from file
+			virtual bool Init(const TextObject & SkinXml) override;
+			//init skin from source 
+			virtual bool Init(const char* buff, size_t size) override;
+//Beato End
 			virtual void Clear(void);
 			virtual void DrawButton(Controls::Base* control, bool bDepressed, bool bHovered, bool bDisabled);
 			virtual void DrawMenuItem(Controls::Base* control, bool bSubmenuOpen, bool bChecked);
@@ -354,6 +359,7 @@ namespace Gwen
 		protected:
 //Beato begin:
 			//Texture m_Texture;
+			static Texture*				m_missingTexture;
 			std::map<Uint16, Texture*>	m_skinTextures;
 //Beato end
 

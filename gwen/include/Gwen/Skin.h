@@ -62,7 +62,9 @@ namespace Gwen
 				virtual ~Base(void);
 
 				virtual bool Init(const TextObject & TextureName);
-
+//Beato Begin:
+				virtual bool Init(const char * buff, size_t size);
+//Beato End;
 				virtual void Clear(void);
 
 				virtual void ReleaseFont(Gwen::Font* fnt);
@@ -141,7 +143,6 @@ namespace Gwen
 				virtual void DrawArrowLeft( Gwen::Rect rect );
 				virtual void DrawArrowRight( Gwen::Rect rect );
 				virtual void DrawCheck( Gwen::Rect rect );
-
 
 				struct
 				{

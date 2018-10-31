@@ -43,6 +43,10 @@ THE SOFTWARE.
 
 bool Gwen::Skin::Base::Init(const TextObject & TextureName) { return false; }
 
+//Beato Begin
+bool Gwen::Skin::Base::Init(const char * buff, size_t size) { return false; }
+//Beato End
+
 void Gwen::Skin::Base::Clear(void) { };
 
 void Gwen::Skin::Base::DrawArrowDown(Gwen::Rect rect)

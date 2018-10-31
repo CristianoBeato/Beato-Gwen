@@ -32,7 +32,11 @@ int main(int argc, char *argv[])
     }
 	
 	// Create a GWEN Renderer
+#if 1
 	m_ConsoleRenderer = new Gwen::Renderer::SDL();
+#else
+	m_ConsoleRenderer = new Gwen::Renderer::OpenGL();
+#endif
 
 	// Create a GWEN skin
 	Gwen::Skin::Base* pSkin = new Gwen::Skin::SkinBase(m_ConsoleRenderer);
@@ -48,7 +52,7 @@ int main(int argc, char *argv[])
 #endif
 
 	//load skin definition
-	if (!pSkin->Init("bin/DefaultSkin.xml"));
+	if (pSkin->Init("bin/DefaultSkin.xml") != true);
 	{
 		printf("can't load the skin definition");
 		exit(-1);

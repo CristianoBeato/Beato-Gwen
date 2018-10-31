@@ -32,7 +32,9 @@ THE SOFTWARE.
 
 #include "Gwen/Skins/SkinBase.h"
 #include "tinyxml2.h"
+#include "missimg.h"
 
+Gwen::Texture* Gwen::Skin::SkinBase::m_missingTexture = NULL;
 
 Gwen::Skin::SkinBase::SkinBase(Gwen::Renderer::Base * renderer) : Gwen::Skin::Base(renderer)
 {
@@ -43,14 +45,13 @@ Gwen::Skin::SkinBase::~SkinBase(void)
 	Clear();
 }
 
-inline bool Gwen::Skin::SkinBase::Init(const TextObject & SkinXml)
-{ 
-	tinyxml2::XMLElement* skinElement;
-	tinyxml2::XMLDocument *skinDocument = NULL;
-	char * docSrc = NULL;
+bool Gwen::Skin::SkinBase::Init(const TextObject & SkinXml)
+{
+	char * buff = NULL;
+
 	//file strteam from the src xml
 	Platform::Stream	*srcFile = new Platform::FileStream;
-
+	
 	//Try Open the file to read
 	if (!srcFile->open(SkinXml.c_str(), "r"))
 	{
@@ -60,19 +61,49 @@ inline bool Gwen::Skin::SkinBase::Init(const TextObject & SkinXml)
 		delete srcFile;
 		return false;
 	}
-
-
+	
 	//Read src
 	size_t fileSize = srcFile->size();
-	docSrc = (char*)SDL_malloc(fileSize);
-	srcFile->read(docSrc, fileSize);
+	buff = (char*)SDL_malloc(fileSize);
+	srcFile->read(buff, fileSize);
 
 	//can free the file handler
 	delete srcFile;
 
+	//parse the src
+	bool ret = Init(buff, fileSize);
+
+	//free the src ptr
+	SDL_free(buff);
+
+	return ret;
+}
+
+bool Gwen::Skin::SkinBase::Init(const char * buff, size_t size)
+{ 
+	tinyxml2::XMLElement* skinElement;
+	tinyxml2::XMLDocument *skinDocument = NULL;
+
 	//create the XML interation, and 
 	skinDocument = new tinyxml2::XMLDocument;
-	skinDocument->Parse(docSrc);
+	skinDocument->Parse(buff, size);
+
+	//create the defalt texture
+	if (m_missingTexture != NULL)
+		delete m_missingTexture;
+
+	
+	m_missingTexture = new Texture;
+	m_missingTexture->Load(TextObject("missing"),
+		missing_image.width,
+		missing_image.height,
+		missing_image.bytes_per_pixel,
+		(char*)missing_image.pixel_data,
+		GetRender());
+
+	//check for fail
+	if (m_missingTexture->FailedToLoad())
+		m_missingTexture = NULL;
 
 	//check for error
 	if (skinDocument->ErrorID() != tinyxml2::XML_SUCCESS)
@@ -100,15 +131,15 @@ inline bool Gwen::Skin::SkinBase::Init(const TextObject & SkinXml)
 			*/
 			if (className == TextObject("Textures"))
 			{
-				tinyxml2::XMLElement* textureElement = skinElement->FirstChildElement("texture");
+				tinyxml2::XMLElement* textureElement = titleElement->FirstChildElement("texture");
 				while (textureElement != NULL)
 				{
 					const char *textureName = textureElement->Attribute("name");
 					const char *texturePath = textureElement->Attribute("image");
 					
 					//
-					if (textureName != nullptr && textureName != nullptr)
-						LoadTexture(textureName, textureName);
+					if (textureName != nullptr && texturePath != nullptr)
+						LoadTexture(textureName, texturePath);
 
 					textureElement = textureElement->NextSiblingElement("texture");
 				}
@@ -119,45 +150,680 @@ inline bool Gwen::Skin::SkinBase::Init(const TextObject & SkinXml)
 			Load Classes Skins definitions
 			====================
 			*/
+			else if (className == TextObject("Panel"))
+			{
+				tinyxml2::XMLElement* Normal = titleElement->FirstChildElement("Normal");
+				if (Normal)	setTexture(Textures.Panel.Normal, Normal);
+
+				tinyxml2::XMLElement* Bright = titleElement->FirstChildElement("Bright");
+				if (Bright)	setTexture(Textures.Panel.Bright, Bright);
+
+				tinyxml2::XMLElement* Dark = titleElement->FirstChildElement("Dark");
+				if (Dark) setTexture(Textures.Panel.Dark, Dark);
+
+				tinyxml2::XMLElement* Highlight = titleElement->FirstChildElement("Highlight");
+				if (Highlight)	setTexture(Textures.Panel.Highlight, Highlight);
+			}
 			else if (className == TextObject("Window"))
+			{
+				//the ative title color
+				tinyxml2::XMLElement* TitleActive = titleElement->FirstChildElement("TitleActive");
+				if (TitleActive) setColor(Colors.Window.TitleActive, TitleActive);
+
+				//the inative title color 
+				tinyxml2::XMLElement* TitleInactive = titleElement->FirstChildElement("TitleInactive");
+				if (TitleInactive)	setColor(Colors.Window.TitleInactive, TitleInactive);
+
+				//the close button
+				tinyxml2::XMLElement* Close = titleElement->FirstChildElement("Close");
+				if (Close) setTexture(Textures.Window.Close, Close);
+
+				//the close button hovered
+				tinyxml2::XMLElement* CloseHover = titleElement->FirstChildElement("CloseHover");
+				if (CloseHover) setTexture(Textures.Window.Close_Hover, CloseHover);
+
+				//the close button down 
+				tinyxml2::XMLElement* CloseDown = titleElement->FirstChildElement("CloseDown");
+				if (CloseDown)	setTexture(Textures.Window.Close_Down, CloseDown);
+
+				//the maximise button 
+				tinyxml2::XMLElement* Maxi = titleElement->FirstChildElement("Maxi");
+				if (Maxi) setTexture(Textures.Window.Maxi, Maxi);
+
+				//the maximise button hovered
+				tinyxml2::XMLElement* MaxiHover = titleElement->FirstChildElement("MaxiHover");
+				if (MaxiHover) setTexture(Textures.Window.Maxi_Hover, MaxiHover);
+
+				//the maximise button down
+				tinyxml2::XMLElement* MaxiDown = titleElement->FirstChildElement("MaxiDown");
+				if (MaxiDown) setTexture(Textures.Window.Maxi_Down, MaxiDown);
+
+				//the minimise button
+				tinyxml2::XMLElement* Mini = titleElement->FirstChildElement("Mini");
+				if (Mini) setTexture(Textures.Window.Mini, Mini);
+
+				//the minimise button hovered
+				tinyxml2::XMLElement* MiniHover = titleElement->FirstChildElement("MiniHover");
+				if (MiniHover) setTexture(Textures.Window.Mini_Hover, MiniHover);
+
+				//the minimise button down
+				tinyxml2::XMLElement* MiniDown = titleElement->FirstChildElement("MiniDown");
+				if (MiniDown) setTexture(Textures.Window.Mini_Down, MiniDown);
+
+				//the restore button 
+				tinyxml2::XMLElement* Restore = titleElement->FirstChildElement("Restore");
+				if (Restore) setTexture(Textures.Window.Restore, Restore);
+
+				//the restore button hovered
+				tinyxml2::XMLElement* RestoreHover = titleElement->FirstChildElement("RestoreHover");
+				if (RestoreHover) setTexture(Textures.Window.Restore_Hover, RestoreHover);
+
+				//the restore button hovered
+				tinyxml2::XMLElement* RestoreDown = titleElement->FirstChildElement("RestoreDown");
+				if (RestoreDown) setTexture(Textures.Window.Restore_Down, RestoreDown);
+
+				//the restore button hovered
+				tinyxml2::XMLElement* Normal = titleElement->FirstChildElement("Normal");
+				if (Normal) setTexture(Textures.Window.Normal, Normal);
+
+				//the restore button hovered
+				tinyxml2::XMLElement* Inactive = titleElement->FirstChildElement("Inactive");
+				if (Inactive) setTexture(Textures.Window.Inactive, Inactive);
+			}
+			else if (className == TextObject("Tab"))
 			{
 				tinyxml2::XMLElement* Active = titleElement->FirstChildElement("Active");
 				if (Active)
 				{
-					setColor(Colors.Window.TitleActive, Active);
-					setTexture(Textures.Window.Normal, Active);
+					//normal active tab
+					tinyxml2::XMLElement* Normal = Active->FirstChildElement("Normal");
+					if (Normal) setColor(Colors.Tab.Active.Normal, Normal);
+
+					//hovered active tab
+					tinyxml2::XMLElement* Hover = Active->FirstChildElement("Hover");
+					if (Hover) setColor(Colors.Tab.Active.Hover, Hover);
+
+					//down active tab
+					tinyxml2::XMLElement* Down = Active->FirstChildElement("Down");
+					if (Down) setColor(Colors.Tab.Active.Down, Down);
+
+					//disable active tab
+					tinyxml2::XMLElement* Disabled = Active->FirstChildElement("Disabled");
+					if (Disabled) setColor(Colors.Tab.Active.Disabled, Disabled);
 				}
 
 				tinyxml2::XMLElement* Inactive = titleElement->FirstChildElement("Inactive");
 				if (Inactive)
 				{
-					setColor(Colors.Window.TitleInactive, Inactive);
-					setTexture(Textures.Window.Inactive, Inactive);
+					//normal inactive tab
+					tinyxml2::XMLElement* Normal = Inactive->FirstChildElement("Normal");
+					if (Normal) setColor(Colors.Tab.Inactive.Normal, Normal);
+
+					//hovered inactive tab
+					tinyxml2::XMLElement* Hover = Inactive->FirstChildElement("Hover");
+					if (Hover) setColor(Colors.Tab.Inactive.Hover, Hover);
+
+					//down inactive tab
+					tinyxml2::XMLElement* Down = Inactive->FirstChildElement("Down");
+					if (Down) setColor(Colors.Tab.Inactive.Down, Down);
+
+					//disable inactive tab
+					tinyxml2::XMLElement* Disabled = Inactive->FirstChildElement("Disabled");
+					if (Disabled) setColor(Colors.Tab.Inactive.Disabled, Disabled);
 				}
-			}
-			else if (className == TextObject("Button"))
-			{
 
-			}
-			else if (className == TextObject("Tab"))
-			{
+				tinyxml2::XMLElement* Control = titleElement->FirstChildElement("Control");
+				if (Control) setTexture(Textures.Tab.Control, Control);
 
+				tinyxml2::XMLElement* HeaderBar = titleElement->FirstChildElement("HeaderBar");
+				if (HeaderBar) setTexture(Textures.Tab.HeaderBar, HeaderBar);
+
+				tinyxml2::XMLElement* Bottom = titleElement->FirstChildElement("Bottom");
+				if (Bottom)
+				{
+					//tab button active
+					tinyxml2::XMLElement* Active = Bottom->FirstChildElement("Active");
+					if (Active) setTexture(Textures.Tab.Bottom.Active, Active);
+
+					//tab buttom inactive
+					tinyxml2::XMLElement* Inactive = Bottom->FirstChildElement("Inactive");
+					if (Inactive) setTexture(Textures.Tab.Bottom.Inactive, Inactive);
+				}
+
+				tinyxml2::XMLElement* Top = titleElement->FirstChildElement("Top");
+				if (Top)
+				{
+					//tab top active
+					tinyxml2::XMLElement* Active = Top->FirstChildElement("Active");
+					if (Active) setTexture(Textures.Tab.Top.Active, Active);
+
+					//tab top inactive
+					tinyxml2::XMLElement* Inactive = Top->FirstChildElement("Inactive");
+					if (Inactive) setTexture(Textures.Tab.Top.Inactive, Inactive);
+				}
+
+				tinyxml2::XMLElement* Left = titleElement->FirstChildElement("Left");
+				if (Left)
+				{
+					//tab left active
+					tinyxml2::XMLElement* Active = Left->FirstChildElement("Active");
+					if (Active) setTexture(Textures.Tab.Left.Active, Active);
+
+					//tab left inactive
+					tinyxml2::XMLElement* Inactive = Left->FirstChildElement("Inactive");
+					if (Inactive) setTexture(Textures.Tab.Left.Inactive, Inactive);
+				}
+
+				tinyxml2::XMLElement* Right = titleElement->FirstChildElement("Right");
+				if (Right)
+				{
+					//tab left active
+					tinyxml2::XMLElement* Active = Right->FirstChildElement("Active");
+					if (Active) setTexture(Textures.Tab.Right.Active, Active);
+
+					//tab left inactive
+					tinyxml2::XMLElement* Inactive = Right->FirstChildElement("Inactive");
+					if (Inactive) setTexture(Textures.Tab.Right.Inactive, Inactive);
+				}
 			}
 			else if (className == TextObject("Label"))
 			{
+				//set label defalt color
+				tinyxml2::XMLElement* Default = titleElement->FirstChildElement("Default");
+				if (Default) setColor(Colors.Label.Default, Default);
+
+				//set label bright color
+				tinyxml2::XMLElement* Bright = titleElement->FirstChildElement("Bright");
+				if (Bright) setColor(Colors.Label.Bright, Bright);
+
+				//set label dark color
+				tinyxml2::XMLElement* Dark = titleElement->FirstChildElement("Dark");
+				if (Dark) setColor(Colors.Label.Dark, Dark);
+
+				//set label highlight color
+				tinyxml2::XMLElement* Highlight = titleElement->FirstChildElement("Highlight");
+				if (Highlight) setColor(Colors.Label.Highlight, Highlight);
 
 			}
 			else if (className == TextObject("Tree"))
 			{
+				//set tree lines color
+				tinyxml2::XMLElement* Lines = titleElement->FirstChildElement("Lines");
+				if (Lines) setColor(Colors.Tree.Lines, Lines);
+
+				//set tree normal color
+				tinyxml2::XMLElement* Normal = titleElement->FirstChildElement("Normal");
+				if (Normal) setColor(Colors.Tree.Normal, Normal);
+
+				//set tree hovered color
+				tinyxml2::XMLElement* Hover = titleElement->FirstChildElement("Hover");
+				if (Hover) setColor(Colors.Tree.Hover, Hover);
+
+				//set tree selected color
+				tinyxml2::XMLElement* Selected = titleElement->FirstChildElement("Selected");
+				if (Selected) setColor(Colors.Tree.Selected, Selected);
+
+				//set tree backgroud
+				tinyxml2::XMLElement* Background = titleElement->FirstChildElement("Background");
+				if (Background) setTexture(Textures.Tree.Background, Background);
+
+				//set tree plus button
+				tinyxml2::XMLElement* Plus = titleElement->FirstChildElement("Plus");
+				if (Plus) setTexture(Textures.Tree.Plus, Plus);
+
+				//set tree minus button
+				tinyxml2::XMLElement* Minus = titleElement->FirstChildElement("Minus");
+				if (Minus) setTexture(Textures.Tree.Minus, Minus);
 
 			}
 			else if (className == TextObject("Properties"))
 			{
+				//set properties normal line color
+				tinyxml2::XMLElement* LineNormal = titleElement->FirstChildElement("LineNormal");
+				if (LineNormal) setColor(Colors.Properties.Line_Normal, LineNormal);
 
+				//set properties selected line color
+				tinyxml2::XMLElement* LineSelected = titleElement->FirstChildElement("LineSelected");
+				if (LineSelected) setColor(Colors.Properties.Line_Selected, LineSelected);
+
+				//set properties hovered line color
+				tinyxml2::XMLElement* LineHover = titleElement->FirstChildElement("LineHover");
+				if (LineHover) setColor(Colors.Properties.Line_Hover, LineHover);
+
+				//set properties colun normal color
+				tinyxml2::XMLElement* ColumnNormal = titleElement->FirstChildElement("ColumnNormal");
+				if (ColumnNormal) setColor(Colors.Properties.Column_Normal, ColumnNormal);
+
+				//set properties selected colun color
+				tinyxml2::XMLElement* ColumnSelected = titleElement->FirstChildElement("ColumnSelected");
+				if (ColumnSelected) setColor(Colors.Properties.Column_Selected, ColumnSelected);
+
+				//set properties hovered colunm color
+				tinyxml2::XMLElement* ColumnHover = titleElement->FirstChildElement("ColumnHover");
+				if (ColumnHover) setColor(Colors.Properties.Column_Hover, ColumnHover);
+
+				//set properties label normal color
+				tinyxml2::XMLElement* LabelNormal = titleElement->FirstChildElement("LabelNormal");
+				if (LabelNormal) setColor(Colors.Properties.Label_Normal, LabelNormal);
+
+				//set properties selected label color
+				tinyxml2::XMLElement* LabelSelected = titleElement->FirstChildElement("LabelSelected");
+				if (LabelSelected) setColor(Colors.Properties.Label_Selected, LabelSelected);
+
+				//set properties hovered label color
+				tinyxml2::XMLElement* LabelHover = titleElement->FirstChildElement("LabelHover");
+				if (LabelHover) setColor(Colors.Properties.Label_Hover, LabelHover);
+
+				//set properties title color
+				tinyxml2::XMLElement* Title = titleElement->FirstChildElement("Title");
+				if (Title) setColor(Colors.Properties.Title, Title);
+
+				//set properties border color
+				tinyxml2::XMLElement* Border = titleElement->FirstChildElement("Border");
+				if (Border) setColor(Colors.Properties.Border, Border);
+
+			}
+			else if (className == TextObject("ModalBackground"))
+			{
+				setColor(Colors.ModalBackground, titleElement);
+			}
+			else if (className == TextObject("TooltipText"))
+			{
+				setColor(Colors.TooltipText, titleElement);
 			}
 			else if (className == TextObject("Category"))
 			{
+				//set categoty header color
+				tinyxml2::XMLElement* Header = titleElement->FirstChildElement("Header");
+				if (Header) setColor(Colors.Category.Header, Header);
 
+				//set properties border color
+				tinyxml2::XMLElement* HeaderClosed = titleElement->FirstChildElement("HeaderClosed");
+				if (HeaderClosed) setColor(Colors.Category.Header_Closed, HeaderClosed);
+
+				//line
+				tinyxml2::XMLElement* Line = titleElement->FirstChildElement("Line");
+				if (Line)
+				{
+					//set Category line text color
+					tinyxml2::XMLElement* Text = Line->FirstChildElement("Text");
+					if (Text) setColor(Colors.Category.Line.Text, Text);
+
+					//set Category line text hovered color
+					tinyxml2::XMLElement* TextHover = Line->FirstChildElement("TextHover");
+					if (TextHover) setColor(Colors.Category.Line.Text_Hover, TextHover);
+
+					//set Category line text hovered color
+					tinyxml2::XMLElement* TextSelected = Line->FirstChildElement("TextSelected");
+					if (TextSelected) setColor(Colors.Category.Line.Text_Selected, TextSelected);
+
+					//set Category line button color
+					tinyxml2::XMLElement* Button = Line->FirstChildElement("Button");
+					if (Button) setColor(Colors.Category.Line.Button, Button);
+
+					//set Category line button hovered color
+					tinyxml2::XMLElement* ButtonHover = Line->FirstChildElement("ButtonHover");
+					if (ButtonHover) setColor(Colors.Category.Line.Button_Hover, ButtonHover);
+
+					//set Category line button hovered color
+					tinyxml2::XMLElement* ButtonSelected = Line->FirstChildElement("ButtonSelected");
+					if (ButtonSelected) setColor(Colors.Category.Line.Button_Selected, ButtonSelected);
+				}
+				//LineAlt
+				tinyxml2::XMLElement* LineAlt = titleElement->FirstChildElement("LineAlt");
+				if (LineAlt)
+				{
+					//set Category line text color
+					tinyxml2::XMLElement* Text = Line->FirstChildElement("Text");
+					if (Text) setColor(Colors.Category.LineAlt.Text, Text);
+
+					//set Category line text hovered color
+					tinyxml2::XMLElement* TextHover = Line->FirstChildElement("TextHover");
+					if (TextHover) setColor(Colors.Category.LineAlt.Text_Hover, TextHover);
+
+					//set Category line text hovered color
+					tinyxml2::XMLElement* TextSelected = Line->FirstChildElement("TextSelected");
+					if (TextSelected) setColor(Colors.Category.LineAlt.Text_Selected, TextSelected);
+
+					//set Category line button color
+					tinyxml2::XMLElement* Button = Line->FirstChildElement("Button");
+					if (Button) setColor(Colors.Category.LineAlt.Button, Button);
+
+					//set Category line button hovered color
+					tinyxml2::XMLElement* ButtonHover = Line->FirstChildElement("ButtonHover");
+					if (ButtonHover) setColor(Colors.Category.LineAlt.Button_Hover, ButtonHover);
+
+					//set Category line button hovered color
+					tinyxml2::XMLElement* ButtonSelected = Line->FirstChildElement("ButtonSelected");
+					if (ButtonSelected) setColor(Colors.Category.LineAlt.Button_Selected, ButtonSelected);
+				}
+			}
+			else if (className == TextObject("CategoryList"))
+			{
+				//set the category list outer color list
+				tinyxml2::XMLElement* Outer = titleElement->FirstChildElement("Outer");
+				if (Outer) setTexture(Textures.CategoryList.Outer, Outer);
+
+				//set the category list Inner color list
+				tinyxml2::XMLElement* Inner = titleElement->FirstChildElement("Inner");
+				if (Inner) setTexture(Textures.CategoryList.Inner, Inner);
+
+				//set the category list outer color list
+				tinyxml2::XMLElement* Header = titleElement->FirstChildElement("Header");
+				if (Header) setTexture(Textures.CategoryList.Header, Header);
+
+			}
+			else if (className == TextObject("Shadow"))
+			{
+				setTexture(Textures.Shadow, titleElement);
+			}
+			else if (className == TextObject("Tooltip"))
+			{
+				setTexture(Textures.Tooltip, titleElement);
+			}
+			else if (className == TextObject("StatusBar"))
+			{
+				setTexture(Textures.StatusBar, titleElement);
+			}
+			else if (className == TextObject("Selection"))
+			{
+				setTexture(Textures.Selection, titleElement);
+			}
+			else if (className == TextObject("Checkbox"))
+			{
+				tinyxml2::XMLElement* Active = titleElement->FirstChildElement("Active");
+				if (Active)
+				{
+					//the active, set checkbox
+					tinyxml2::XMLElement* Checked = Active->FirstChildElement("Checked");
+					if (Checked) setTexture(Textures.Checkbox.Active.Checked, Checked);
+
+					//the active, clear checkbox
+					tinyxml2::XMLElement* Normal = Active->FirstChildElement("Normal");
+					if (Normal) setTexture(Textures.Checkbox.Active.Normal, Normal);
+
+				}
+
+				tinyxml2::XMLElement* Disabled = titleElement->FirstChildElement("Disabled");
+				if (Disabled)
+				{
+					//the active, set checkbox
+					tinyxml2::XMLElement* Checked = Disabled->FirstChildElement("Checked");
+					if (Checked) setTexture(Textures.Checkbox.Disabled.Checked, Checked);
+
+					//the active, clear checkbox
+					tinyxml2::XMLElement* Normal = Disabled->FirstChildElement("Normal");
+					if (Normal) setTexture(Textures.Checkbox.Disabled.Normal, Normal);
+
+				}
+			}
+			else if (className == TextObject("RadioButton"))
+			{
+				tinyxml2::XMLElement* Active = titleElement->FirstChildElement("Active");
+				if (Active)
+				{
+					//the active, set checkbox
+					tinyxml2::XMLElement* Checked = Active->FirstChildElement("Checked");
+					if (Checked) setTexture(Textures.RadioButton.Active.Checked, Checked);
+
+					//the active, clear checkbox
+					tinyxml2::XMLElement* Normal = Active->FirstChildElement("Normal");
+					if (Normal) setTexture(Textures.RadioButton.Active.Normal, Normal);
+
+				}
+
+				tinyxml2::XMLElement* Disabled = titleElement->FirstChildElement("Disabled");
+				if (Disabled)
+				{
+					//the active, set checkbox
+					tinyxml2::XMLElement* Checked = Disabled->FirstChildElement("Checked");
+					if (Checked) setTexture(Textures.RadioButton.Disabled.Checked, Checked);
+
+					//the active, clear checkbox
+					tinyxml2::XMLElement* Normal = Disabled->FirstChildElement("Normal");
+					if (Normal) setTexture(Textures.RadioButton.Disabled.Normal, Normal);
+
+				}
+			}
+			else if (className == TextObject("TextBox"))
+			{
+				//normal text box texture 
+				tinyxml2::XMLElement* Normal = titleElement->FirstChildElement("Normal");
+				if (Normal) setTexture(Textures.TextBox.Normal, Normal);
+
+				//normal text box texture  
+				tinyxml2::XMLElement* Focus = titleElement->FirstChildElement("Focus");
+				if (Focus) setTexture(Textures.TextBox.Focus, Focus);
+
+				//normal text box color 
+				tinyxml2::XMLElement* Disabled = titleElement->FirstChildElement("Disabled");
+				if (Disabled) setTexture(Textures.TextBox.Disabled, Disabled);
+			}
+			else if (className == TextObject("Menu"))
+			{
+				//menu strip texture
+				tinyxml2::XMLElement* Strip = titleElement->FirstChildElement("Strip");
+				if (Strip) setTexture(Textures.Menu.Strip, Strip);
+
+				//menu background with margin texture
+				tinyxml2::XMLElement* BackgroundWithMargin = titleElement->FirstChildElement("BackgroundWithMargin");
+				if (BackgroundWithMargin) setTexture(Textures.Menu.BackgroundWithMargin, BackgroundWithMargin);
+
+				//menu Background texture
+				tinyxml2::XMLElement* Background = titleElement->FirstChildElement("Background");
+				if (Background) setTexture(Textures.Menu.Background, Background);
+
+				//menu Hover texture
+				tinyxml2::XMLElement* Hover = titleElement->FirstChildElement("Hover");
+				if (Hover) setTexture(Textures.Menu.Hover, Hover);
+
+				//menu RightArrow texture
+				tinyxml2::XMLElement* RightArrow = titleElement->FirstChildElement("RightArrow");
+				if (RightArrow) setTexture(Textures.Menu.RightArrow, RightArrow);
+
+				//menu RightArrow texture
+				tinyxml2::XMLElement* Check = titleElement->FirstChildElement("Check");
+				if (Check) setTexture(Textures.Menu.Check, Check);
+			}
+			else if (className == TextObject("Button"))
+			{
+				//button normal texture
+				tinyxml2::XMLElement* Normal = titleElement->FirstChildElement("Normal");
+				if (Normal) setTexture(Textures.Input.Button.Normal, Normal);
+
+				//button Hovered texture
+				tinyxml2::XMLElement* Hovered = titleElement->FirstChildElement("Hovered");
+				if (Hovered) setTexture(Textures.Input.Button.Hovered, Hovered);
+
+				//button Disabled texture
+				tinyxml2::XMLElement* Disabled = titleElement->FirstChildElement("Disabled");
+				if (Disabled) setTexture(Textures.Input.Button.Disabled, Disabled);
+
+				//button Pressed texture
+				tinyxml2::XMLElement* Pressed = titleElement->FirstChildElement("Pressed");
+				if (Pressed) setTexture(Textures.Input.Button.Pressed, Pressed);
+			}
+			else if (className == TextObject("ListBox"))
+			{
+				//list box background texture
+				tinyxml2::XMLElement* Background = titleElement->FirstChildElement("Background");
+				if (Background) setTexture(Textures.Input.ListBox.Background, Background);
+
+				//list box Hovered texture
+				tinyxml2::XMLElement* Hovered = titleElement->FirstChildElement("Hovered");
+				if (Hovered) setTexture(Textures.Input.ListBox.Hovered, Hovered);
+
+				//list box EvenLine texture
+				tinyxml2::XMLElement* EvenLine = titleElement->FirstChildElement("EvenLine");
+				if (EvenLine) setTexture(Textures.Input.ListBox.EvenLine, EvenLine);
+
+				//list box OddLine texture
+				tinyxml2::XMLElement* OddLine = titleElement->FirstChildElement("OddLine");
+				if (OddLine) setTexture(Textures.Input.ListBox.OddLine, OddLine);
+
+				//list box EvenLineSelected texture
+				tinyxml2::XMLElement* EvenLineSelected = titleElement->FirstChildElement("EvenLineSelected");
+				if (EvenLineSelected) setTexture(Textures.Input.ListBox.EvenLineSelected, EvenLineSelected);
+
+				//list box OddLineSelected texture
+				tinyxml2::XMLElement* OddLineSelected = titleElement->FirstChildElement("OddLineSelected");
+				if (OddLineSelected) setTexture(Textures.Input.ListBox.OddLineSelected, OddLineSelected);
+			}
+			else if (className == TextObject("ComboBox"))
+			{
+				//ComboBox Normal texture
+				tinyxml2::XMLElement* Normal = titleElement->FirstChildElement("Normal");
+				if (Normal) setTexture(Textures.Input.ComboBox.Normal, Normal);
+
+				//ComboBox Hover texture
+				tinyxml2::XMLElement* Hover = titleElement->FirstChildElement("Hover");
+				if (Hover) setTexture(Textures.Input.ComboBox.Hover, Hover);
+
+				//ComboBox Down texture
+				tinyxml2::XMLElement* Down = titleElement->FirstChildElement("Down");
+				if (Down) setTexture(Textures.Input.ComboBox.Down, Down);
+
+				//ComboBox Disabled texture
+				tinyxml2::XMLElement* Disabled = titleElement->FirstChildElement("Disabled");
+				if (Disabled) setTexture(Textures.Input.ComboBox.Disabled, Disabled);
+
+				//ComboBox button set
+				tinyxml2::XMLElement* Button = titleElement->FirstChildElement("Button");
+				if (Button)
+				{
+					//ComboBox buton Normal texture
+					tinyxml2::XMLElement* Normal = Button->FirstChildElement("Normal");
+					if (Normal) setTexture(Textures.Input.ComboBox.Button.Normal, Normal);
+
+					//ComboBox buton Hover texture
+					tinyxml2::XMLElement* Hover = Button->FirstChildElement("Hover");
+					if (Hover) setTexture(Textures.Input.ComboBox.Button.Hover, Hover);
+
+					//ComboBox buton Down texture
+					tinyxml2::XMLElement* Down = Button->FirstChildElement("Down");
+					if (Down) setTexture(Textures.Input.ComboBox.Button.Down, Down);
+
+					//ComboBox buton Down texture
+					tinyxml2::XMLElement* Disabled = Button->FirstChildElement("Disabled");
+					if (Disabled) setTexture(Textures.Input.ComboBox.Button.Disabled, Disabled);
+				}
+			}
+			else if (className == TextObject("UpDown"))
+			{
+
+				//Up button set
+				tinyxml2::XMLElement* Up = titleElement->FirstChildElement("Up");
+				if (Up)
+				{
+					//Normal
+					tinyxml2::XMLElement* Normal = Up->FirstChildElement("Normal");
+					if (Normal) setTexture(Textures.Input.UpDown.Up.Normal, Normal);
+
+					//Hover
+					tinyxml2::XMLElement* Hover = Up->FirstChildElement("Hover");
+					if (Hover) setTexture(Textures.Input.UpDown.Up.Hover, Hover);
+
+					//Down
+					tinyxml2::XMLElement* Down = Up->FirstChildElement("Down");
+					if (Down) setTexture(Textures.Input.UpDown.Up.Down, Down);
+
+					//Down
+					tinyxml2::XMLElement* Disabled = Up->FirstChildElement("Disabled");
+					if (Disabled) setTexture(Textures.Input.UpDown.Up.Disabled, Disabled);
+				}
+
+				//Down button set
+				tinyxml2::XMLElement* Down = titleElement->FirstChildElement("Down");
+				if (Down)
+				{
+					//Normal
+					tinyxml2::XMLElement* Normal = Up->FirstChildElement("Normal");
+					if (Normal) setTexture(Textures.Input.UpDown.Up.Normal, Normal);
+
+					//Hover
+					tinyxml2::XMLElement* Hover = Up->FirstChildElement("Hover");
+					if (Hover) setTexture(Textures.Input.UpDown.Up.Hover, Hover);
+
+					//Down
+					tinyxml2::XMLElement* Down = Up->FirstChildElement("Down");
+					if (Down) setTexture(Textures.Input.UpDown.Up.Down, Down);
+
+					//Down
+					tinyxml2::XMLElement* Disabled = Up->FirstChildElement("Disabled");
+					if (Disabled) setTexture(Textures.Input.UpDown.Up.Disabled, Disabled);
+				}
+			}
+			else if (className == TextObject("Slider"))
+			{
+				//Down button set
+				tinyxml2::XMLElement* Vertical = titleElement->FirstChildElement("Vertical");
+				if (Vertical)
+				{
+					//Normal
+					tinyxml2::XMLElement* Normal = Vertical->FirstChildElement("Normal");
+					if (Normal) setTexture(Textures.Input.Slider.H.Normal, Normal);
+
+					//Hover
+					tinyxml2::XMLElement* Hover = Vertical->FirstChildElement("Hover");
+					if (Hover) setTexture(Textures.Input.Slider.H.Hover, Hover);
+
+					//Down
+					tinyxml2::XMLElement* Down = Vertical->FirstChildElement("Down");
+					if (Down) setTexture(Textures.Input.Slider.H.Down, Down);
+
+					//Down
+					tinyxml2::XMLElement* Disabled = Vertical->FirstChildElement("Disabled");
+					if (Disabled) setTexture(Textures.Input.Slider.H.Disabled, Disabled);
+				}
+
+				//Down button set
+				tinyxml2::XMLElement* Horisontal = titleElement->FirstChildElement("Horisontal");
+				if (Horisontal)
+				{
+					//Normal
+					tinyxml2::XMLElement* Normal = Vertical->FirstChildElement("Normal");
+					if (Normal) setTexture(Textures.Input.Slider.V.Normal, Normal);
+
+					//Hover
+					tinyxml2::XMLElement* Hover = Vertical->FirstChildElement("Hover");
+					if (Hover) setTexture(Textures.Input.Slider.V.Hover, Hover);
+
+					//Down
+					tinyxml2::XMLElement* Down = Vertical->FirstChildElement("Down");
+					if (Down) setTexture(Textures.Input.Slider.V.Down, Down);
+
+					//Down
+					tinyxml2::XMLElement* Disabled = Vertical->FirstChildElement("Disabled");
+					if (Disabled) setTexture(Textures.Input.Slider.V.Disabled, Disabled);
+				}
+			}
+			else if (className == TextObject("ProgressBar"))
+			{
+				//Back
+				tinyxml2::XMLElement* Back = titleElement->FirstChildElement("Back");
+				if (Back) setTexture(Textures.ProgressBar.Back, Back);
+
+				//Front
+				tinyxml2::XMLElement* Front = titleElement->FirstChildElement("Front");
+				if (Front) setTexture(Textures.ProgressBar.Front, Front);
+			}
+			else if (className == TextObject("CategoryList"))
+			{
+				//Outer
+				tinyxml2::XMLElement* Outer = titleElement->FirstChildElement("Outer");
+				if (Outer) setTexture(Textures.CategoryList.Outer, Outer);
+
+				//Outer
+				tinyxml2::XMLElement* Inner = titleElement->FirstChildElement("Inner");
+				if (Inner) setTexture(Textures.CategoryList.Inner, Inner);
+
+				//Outer
+				tinyxml2::XMLElement* Header = titleElement->FirstChildElement("Header");
+				if (Header) setTexture(Textures.CategoryList.Header, Header);
+			}
+			else if (className == TextObject("GroupBox"))
+			{
+				setTexture(Textures.GroupBox, titleElement);
 			}
 			titleElement = titleElement->NextSiblingElement();
 		}
@@ -171,14 +837,14 @@ inline bool Gwen::Skin::SkinBase::Init(const TextObject & SkinXml)
 		//TODO: handler error here
 		return false;
 	}
-	
-	SDL_free(docSrc);
 
 	return true;
 }
 
 void Gwen::Skin::SkinBase::Clear(void)
 {
+	delete m_missingTexture;
+
 	//clear textures from render
 	for (std::pair<Uint16, Texture*> texture : m_skinTextures)
 	{
@@ -191,7 +857,7 @@ void Gwen::Skin::SkinBase::Clear(void)
 	m_skinTextures.clear();
 }
 
-inline void Gwen::Skin::SkinBase::DrawButton(Gwen::Controls::Base * control, bool bDepressed, bool bHovered, bool bDisabled)
+void Gwen::Skin::SkinBase::DrawButton(Gwen::Controls::Base * control, bool bDepressed, bool bHovered, bool bDisabled)
 {
 	if (bDisabled) 
 		return Textures.Input.Button.Disabled.Draw(GetRender(), control->GetRenderBounds());
@@ -205,7 +871,7 @@ inline void Gwen::Skin::SkinBase::DrawButton(Gwen::Controls::Base * control, boo
 	Textures.Input.Button.Normal.Draw(GetRender(), control->GetRenderBounds());
 }
 
-inline void Gwen::Skin::SkinBase::DrawMenuItem(Gwen::Controls::Base * control, bool bSubmenuOpen, bool bChecked)
+void Gwen::Skin::SkinBase::DrawMenuItem(Gwen::Controls::Base * control, bool bSubmenuOpen, bool bChecked)
 {
 	const Gwen::Rect & rect = control->GetRenderBounds();
 
@@ -216,12 +882,12 @@ inline void Gwen::Skin::SkinBase::DrawMenuItem(Gwen::Controls::Base * control, b
 		Textures.Menu.Check.Draw(GetRender(), Gwen::Rect(rect.x + 4, rect.y + 3, 15, 15));
 }
 
-inline void Gwen::Skin::SkinBase::DrawMenuStrip(Gwen::Controls::Base * control)
+void Gwen::Skin::SkinBase::DrawMenuStrip(Gwen::Controls::Base * control)
 {
 	Textures.Menu.Strip.Draw(GetRender(), control->GetRenderBounds());
 }
 
-inline void Gwen::Skin::SkinBase::DrawMenu(Gwen::Controls::Base * control, bool bPaddingDisabled)
+void Gwen::Skin::SkinBase::DrawMenu(Gwen::Controls::Base * control, bool bPaddingDisabled)
 {
 	if (!bPaddingDisabled)
 		return Textures.Menu.BackgroundWithMargin.Draw(GetRender(), control->GetRenderBounds());
@@ -229,12 +895,12 @@ inline void Gwen::Skin::SkinBase::DrawMenu(Gwen::Controls::Base * control, bool 
 	Textures.Menu.Background.Draw(GetRender(), control->GetRenderBounds());
 }
 
-inline void Gwen::Skin::SkinBase::DrawMenuRightArrow(Controls::Base * control)
+void Gwen::Skin::SkinBase::DrawMenuRightArrow(Controls::Base * control)
 {
 	Textures.Menu.RightArrow.Draw(GetRender(), control->GetRenderBounds());
 }
 
-inline void Gwen::Skin::SkinBase::DrawShadow(Gwen::Controls::Base * control)
+void Gwen::Skin::SkinBase::DrawShadow(Gwen::Controls::Base * control)
 {
 	Gwen::Rect r = control->GetRenderBounds();
 	r.x -= 4;
@@ -244,7 +910,7 @@ inline void Gwen::Skin::SkinBase::DrawShadow(Gwen::Controls::Base * control)
 	Textures.Shadow.Draw(GetRender(), r);
 }
 
-inline void Gwen::Skin::SkinBase::DrawRadioButton(Gwen::Controls::Base * control, bool bSelected, bool bDepressed)
+void Gwen::Skin::SkinBase::DrawRadioButton(Gwen::Controls::Base * control, bool bSelected, bool bDepressed)
 {
 	if (bSelected)
 	{
@@ -262,7 +928,7 @@ inline void Gwen::Skin::SkinBase::DrawRadioButton(Gwen::Controls::Base * control
 	}
 }
 
-inline void Gwen::Skin::SkinBase::DrawCheckBox(Gwen::Controls::Base * control, bool bSelected, bool bDepressed)
+void Gwen::Skin::SkinBase::DrawCheckBox(Gwen::Controls::Base * control, bool bSelected, bool bDepressed)
 {
 	if (bSelected)
 	{
@@ -280,7 +946,7 @@ inline void Gwen::Skin::SkinBase::DrawCheckBox(Gwen::Controls::Base * control, b
 	}
 }
 
-inline void Gwen::Skin::SkinBase::DrawGroupBox(Gwen::Controls::Base * control, int textStart, int textHeight, int textWidth)
+void Gwen::Skin::SkinBase::DrawGroupBox(Gwen::Controls::Base * control, int textStart, int textHeight, int textWidth)
 {
 	Gwen::Rect rect = control->GetRenderBounds();
 	rect.y += textHeight * 0.5f;
@@ -291,7 +957,7 @@ inline void Gwen::Skin::SkinBase::DrawGroupBox(Gwen::Controls::Base * control, i
 	Textures.GroupBox.Draw(GetRender(), rect, Gwen::Colors::White, false, true, false, false, false, false, false, false, false);
 }
 
-inline void Gwen::Skin::SkinBase::DrawTextBox(Gwen::Controls::Base * control)
+void Gwen::Skin::SkinBase::DrawTextBox(Gwen::Controls::Base * control)
 {
 	if (control->IsDisabled())
 	{
@@ -308,7 +974,7 @@ inline void Gwen::Skin::SkinBase::DrawTextBox(Gwen::Controls::Base * control)
 	}
 }
 
-inline void Gwen::Skin::SkinBase::DrawActiveTabButton(Gwen::Controls::Base * control, int dir)
+void Gwen::Skin::SkinBase::DrawActiveTabButton(Gwen::Controls::Base * control, int dir)
 {
 	if (dir == Pos::Bottom) { return Textures.Tab.Bottom.Active.Draw(GetRender(), control->GetRenderBounds() + Rect(0, -8, 0, 8)); }
 
@@ -319,7 +985,7 @@ inline void Gwen::Skin::SkinBase::DrawActiveTabButton(Gwen::Controls::Base * con
 	if (dir == Pos::Right) { return Textures.Tab.Right.Active.Draw(GetRender(), control->GetRenderBounds() + Rect(-8, 0, 8, 0)); }
 }
 
-inline void Gwen::Skin::SkinBase::DrawTabButton(Gwen::Controls::Base * control, bool bActive, int dir)
+void Gwen::Skin::SkinBase::DrawTabButton(Gwen::Controls::Base * control, bool bActive, int dir)
 {
 	if (bActive)
 	{
@@ -335,35 +1001,35 @@ inline void Gwen::Skin::SkinBase::DrawTabButton(Gwen::Controls::Base * control, 
 	if (dir == Pos::Right) { return Textures.Tab.Right.Inactive.Draw(GetRender(), control->GetRenderBounds()); }
 }
 
-inline void Gwen::Skin::SkinBase::DrawTabControl(Gwen::Controls::Base * control)
+void Gwen::Skin::SkinBase::DrawTabControl(Gwen::Controls::Base * control)
 {
 	Textures.Tab.Control.Draw(GetRender(), control->GetRenderBounds());
 }
 
-inline void Gwen::Skin::SkinBase::DrawTabTitleBar(Gwen::Controls::Base * control)
+void Gwen::Skin::SkinBase::DrawTabTitleBar(Gwen::Controls::Base * control)
 {
 	Textures.Tab.HeaderBar.Draw(GetRender(), control->GetRenderBounds());
 }
 
-inline void Gwen::Skin::SkinBase::DrawGenericPanel(Controls::Base * control)
+void Gwen::Skin::SkinBase::DrawGenericPanel(Controls::Base * control)
 {
 	Textures.Panel.Normal.Draw(GetRender(), control->GetRenderBounds());
 }
 
-inline void Gwen::Skin::SkinBase::DrawWindow(Gwen::Controls::Base * control, int topHeight, bool inFocus)
+void Gwen::Skin::SkinBase::DrawWindow(Gwen::Controls::Base * control, int topHeight, bool inFocus)
 {
 	if (inFocus) { Textures.Window.Normal.Draw(GetRender(), control->GetRenderBounds()); }
 	else { Textures.Window.Inactive.Draw(GetRender(), control->GetRenderBounds()); }
 }
 
-inline void Gwen::Skin::SkinBase::DrawHighlight(Gwen::Controls::Base * control)
+void Gwen::Skin::SkinBase::DrawHighlight(Gwen::Controls::Base * control)
 {
 	Gwen::Rect rect = control->GetRenderBounds();
 	GetRender()->SetDrawColor(Gwen::Color(255, 100, 255, 255));
 	GetRender()->DrawFilledRect(rect);
 }
 
-inline void Gwen::Skin::SkinBase::DrawScrollBar(Gwen::Controls::Base * control, bool isHorizontal, bool bDepressed)
+void Gwen::Skin::SkinBase::DrawScrollBar(Gwen::Controls::Base * control, bool isHorizontal, bool bDepressed)
 {
 	if (isHorizontal)
 	{
@@ -375,7 +1041,7 @@ inline void Gwen::Skin::SkinBase::DrawScrollBar(Gwen::Controls::Base * control, 
 	}
 }
 
-inline void Gwen::Skin::SkinBase::DrawScrollBarBar(Controls::Base * control, bool bDepressed, bool isHovered, bool isHorizontal)
+void Gwen::Skin::SkinBase::DrawScrollBarBar(Controls::Base * control, bool bDepressed, bool isHovered, bool isHorizontal)
 {
 	if (!isHorizontal)
 	{
@@ -415,7 +1081,7 @@ inline void Gwen::Skin::SkinBase::DrawScrollBarBar(Controls::Base * control, boo
 	return Textures.Scroller.ButtonH_Normal.Draw(GetRender(), control->GetRenderBounds());
 }
 
-inline void Gwen::Skin::SkinBase::DrawProgressBar(Gwen::Controls::Base * control, bool isHorizontal, float progress)
+void Gwen::Skin::SkinBase::DrawProgressBar(Gwen::Controls::Base * control, bool isHorizontal, float progress)
 {
 	Gwen::Rect rect = control->GetRenderBounds();
 	Gwen::Color FillColour(0, 211, 40, 255);
@@ -440,12 +1106,12 @@ inline void Gwen::Skin::SkinBase::DrawProgressBar(Gwen::Controls::Base * control
 	}
 }
 
-inline void Gwen::Skin::SkinBase::DrawListBox(Gwen::Controls::Base * control)
+void Gwen::Skin::SkinBase::DrawListBox(Gwen::Controls::Base * control)
 {
 	return Textures.Input.ListBox.Background.Draw(GetRender(), control->GetRenderBounds());
 }
 
-inline void Gwen::Skin::SkinBase::DrawListBoxLine(Gwen::Controls::Base * control, bool bSelected, bool bEven)
+void Gwen::Skin::SkinBase::DrawListBoxLine(Gwen::Controls::Base * control, bool bSelected, bool bEven)
 {
 	if (bSelected)
 	{
@@ -472,7 +1138,7 @@ inline void Gwen::Skin::SkinBase::DrawListBoxLine(Gwen::Controls::Base * control
 	return Textures.Input.ListBox.OddLine.Draw(GetRender(), control->GetRenderBounds());
 }
 
-inline void Gwen::Skin::SkinBase::DrawSliderNotchesH(Gwen::Rect rect, int numNotches, int dist)
+void Gwen::Skin::SkinBase::DrawSliderNotchesH(Gwen::Rect rect, int numNotches, int dist)
 {
 	if (numNotches == 0) { return; }
 
@@ -484,7 +1150,7 @@ inline void Gwen::Skin::SkinBase::DrawSliderNotchesH(Gwen::Rect rect, int numNot
 	}
 }
 
-inline void Gwen::Skin::SkinBase::DrawSliderNotchesV(Gwen::Rect rect, int numNotches, int dist)
+void Gwen::Skin::SkinBase::DrawSliderNotchesV(Gwen::Rect rect, int numNotches, int dist)
 {
 	if (numNotches == 0) { return; }
 
@@ -496,7 +1162,7 @@ inline void Gwen::Skin::SkinBase::DrawSliderNotchesV(Gwen::Rect rect, int numNot
 	}
 }
 
-inline void Gwen::Skin::SkinBase::DrawSlider(Gwen::Controls::Base * control, bool bIsHorizontal, int numNotches, int barSize)
+void Gwen::Skin::SkinBase::DrawSlider(Gwen::Controls::Base * control, bool bIsHorizontal, int numNotches, int barSize)
 {
 	if (bIsHorizontal)
 	{
@@ -520,7 +1186,7 @@ inline void Gwen::Skin::SkinBase::DrawSlider(Gwen::Controls::Base * control, boo
 	return GetRender()->DrawFilledRect(rect);
 }
 
-inline void Gwen::Skin::SkinBase::DrawComboBox(Gwen::Controls::Base * control, bool bDown, bool bMenuOpen)
+void Gwen::Skin::SkinBase::DrawComboBox(Gwen::Controls::Base * control, bool bDown, bool bMenuOpen)
 {
 	if (control->IsDisabled())
 	{
@@ -540,7 +1206,7 @@ inline void Gwen::Skin::SkinBase::DrawComboBox(Gwen::Controls::Base * control, b
 	Textures.Input.ComboBox.Normal.Draw(GetRender(), control->GetRenderBounds());
 }
 
-inline void Gwen::Skin::SkinBase::DrawKeyboardHighlight(Gwen::Controls::Base * control, const Gwen::Rect & r, int iOffset)
+void Gwen::Skin::SkinBase::DrawKeyboardHighlight(Gwen::Controls::Base * control, const Gwen::Rect & r, int iOffset)
 {
 	Gwen::Rect rect = r;
 	rect.x += iOffset;
@@ -583,12 +1249,12 @@ inline void Gwen::Skin::SkinBase::DrawKeyboardHighlight(Gwen::Controls::Base * c
 	}
 }
 
-inline void Gwen::Skin::SkinBase::DrawToolTip(Gwen::Controls::Base * control)
+void Gwen::Skin::SkinBase::DrawToolTip(Gwen::Controls::Base * control)
 {
 	return Textures.Tooltip.Draw(GetRender(), control->GetRenderBounds());
 }
 
-inline void Gwen::Skin::SkinBase::DrawScrollButton(Gwen::Controls::Base * control, int iDirection, bool bDepressed, bool bHovered, bool bDisabled)
+void Gwen::Skin::SkinBase::DrawScrollButton(Gwen::Controls::Base * control, int iDirection, bool bDepressed, bool bHovered, bool bDisabled)
 {
 	int i = 0;
 
@@ -616,7 +1282,7 @@ inline void Gwen::Skin::SkinBase::DrawScrollButton(Gwen::Controls::Base * contro
 	return Textures.Scroller.Button.Normal[i].Draw(GetRender(), control->GetRenderBounds());
 }
 
-inline void Gwen::Skin::SkinBase::DrawComboDownArrow(Gwen::Controls::Base * control, bool bHovered, bool bDown, bool bMenuOpen, bool bDisabled)
+void Gwen::Skin::SkinBase::DrawComboDownArrow(Gwen::Controls::Base * control, bool bHovered, bool bDown, bool bMenuOpen, bool bDisabled)
 {
 	if (bDisabled)
 	{
@@ -636,7 +1302,7 @@ inline void Gwen::Skin::SkinBase::DrawComboDownArrow(Gwen::Controls::Base * cont
 	Textures.Input.ComboBox.Button.Normal.Draw(GetRender(), control->GetRenderBounds());
 }
 
-inline void Gwen::Skin::SkinBase::DrawNumericUpDownButton(Gwen::Controls::Base * control, bool bDepressed, bool bUp)
+void Gwen::Skin::SkinBase::DrawNumericUpDownButton(Gwen::Controls::Base * control, bool bDepressed, bool bUp)
 {
 	if (bUp)
 	{
@@ -658,12 +1324,12 @@ inline void Gwen::Skin::SkinBase::DrawNumericUpDownButton(Gwen::Controls::Base *
 	return Textures.Input.UpDown.Down.Normal.DrawCenter(GetRender(), control->GetRenderBounds());
 }
 
-inline void Gwen::Skin::SkinBase::DrawStatusBar(Controls::Base * control)
+void Gwen::Skin::SkinBase::DrawStatusBar(Controls::Base * control)
 {
 	Textures.StatusBar.Draw(GetRender(), control->GetRenderBounds());
 }
 
-inline void Gwen::Skin::SkinBase::DrawTreeButton(Controls::Base * control, bool bOpen)
+void Gwen::Skin::SkinBase::DrawTreeButton(Controls::Base * control, bool bOpen)
 {
 	Gwen::Rect rect = control->GetRenderBounds();
 
@@ -677,7 +1343,7 @@ inline void Gwen::Skin::SkinBase::DrawTreeButton(Controls::Base * control, bool 
 	}
 }
 
-inline void Gwen::Skin::SkinBase::DrawColorDisplay(Controls::Base * control, Gwen::Color color)
+void Gwen::Skin::SkinBase::DrawColorDisplay(Controls::Base * control, Gwen::Color color)
 {
 	Gwen::Rect rect = control->GetRenderBounds();
 
@@ -696,7 +1362,7 @@ inline void Gwen::Skin::SkinBase::DrawColorDisplay(Controls::Base * control, Gwe
 	GetRender()->DrawLinedRect(rect);
 }
 
-inline void Gwen::Skin::SkinBase::DrawModalControl(Controls::Base * control)
+void Gwen::Skin::SkinBase::DrawModalControl(Controls::Base * control)
 {
 	if (!control->ShouldDrawBackground()) { return; }
 
@@ -705,19 +1371,19 @@ inline void Gwen::Skin::SkinBase::DrawModalControl(Controls::Base * control)
 	GetRender()->DrawFilledRect(rect);
 }
 
-inline void Gwen::Skin::SkinBase::DrawMenuDivider(Controls::Base * control)
+void Gwen::Skin::SkinBase::DrawMenuDivider(Controls::Base * control)
 {
 	Gwen::Rect rect = control->GetRenderBounds();
 	GetRender()->SetDrawColor(Gwen::Color(0, 0, 0, 100));
 	GetRender()->DrawFilledRect(rect);
 }
 
-inline void Gwen::Skin::SkinBase::DrawTreeControl(Controls::Base * control)
+void Gwen::Skin::SkinBase::DrawTreeControl(Controls::Base * control)
 {
 	Textures.Tree.Background.Draw(GetRender(), control->GetRenderBounds());
 }
 
-inline void Gwen::Skin::SkinBase::DrawWindowCloseButton(Gwen::Controls::Base * control, bool bDepressed, bool bHovered, bool bDisabled)
+void Gwen::Skin::SkinBase::DrawWindowCloseButton(Gwen::Controls::Base * control, bool bDepressed, bool bHovered, bool bDisabled)
 {
 	Gwen::Rect r = Gwen::Rect(control->GetRenderBounds().x, control->GetRenderBounds().y, 31, 31);
 
@@ -730,7 +1396,7 @@ inline void Gwen::Skin::SkinBase::DrawWindowCloseButton(Gwen::Controls::Base * c
 	Textures.Window.Close.Draw(GetRender(), r);
 }
 
-inline void Gwen::Skin::SkinBase::DrawWindowMaximizeButton(Gwen::Controls::Base * control, bool bDepressed, bool bHovered, bool bDisabled, bool bMaximized)
+void Gwen::Skin::SkinBase::DrawWindowMaximizeButton(Gwen::Controls::Base * control, bool bDepressed, bool bHovered, bool bDisabled, bool bMaximized)
 {
 	Gwen::Rect r = Gwen::Rect(control->GetRenderBounds().x, control->GetRenderBounds().y, 31, 31);
 
@@ -754,7 +1420,7 @@ inline void Gwen::Skin::SkinBase::DrawWindowMaximizeButton(Gwen::Controls::Base 
 	return Textures.Window.Restore.Draw(GetRender(), r);
 }
 
-inline void Gwen::Skin::SkinBase::DrawWindowMinimizeButton(Gwen::Controls::Base * control, bool bDepressed, bool bHovered, bool bDisabled)
+void Gwen::Skin::SkinBase::DrawWindowMinimizeButton(Gwen::Controls::Base * control, bool bDepressed, bool bHovered, bool bDisabled)
 {
 	Gwen::Rect r = Gwen::Rect(control->GetRenderBounds().x, control->GetRenderBounds().y, 31, 31);
 
@@ -767,7 +1433,7 @@ inline void Gwen::Skin::SkinBase::DrawWindowMinimizeButton(Gwen::Controls::Base 
 	Textures.Window.Mini.Draw(GetRender(), r);
 }
 
-inline void Gwen::Skin::SkinBase::DrawSlideButton(Gwen::Controls::Base * control, bool bDepressed, bool bHorizontal)
+void Gwen::Skin::SkinBase::DrawSlideButton(Gwen::Controls::Base * control, bool bDepressed, bool bHorizontal)
 {
 	if (!bHorizontal)
 	{
@@ -789,7 +1455,7 @@ inline void Gwen::Skin::SkinBase::DrawSlideButton(Gwen::Controls::Base * control
 	Textures.Input.Slider.H.Normal.DrawCenter(GetRender(), control->GetRenderBounds());
 }
 
-inline void Gwen::Skin::SkinBase::DrawTreeNode(Controls::Base * ctrl, bool bOpen, bool bSelected, int iLabelHeight, int iLabelWidth, int iHalfWay, int iLastBranch, bool bIsRoot)
+void Gwen::Skin::SkinBase::DrawTreeNode(Controls::Base * ctrl, bool bOpen, bool bSelected, int iLabelHeight, int iLabelWidth, int iHalfWay, int iLastBranch, bool bIsRoot)
 {
 	if (bSelected)
 	{
@@ -799,12 +1465,12 @@ inline void Gwen::Skin::SkinBase::DrawTreeNode(Controls::Base * ctrl, bool bOpen
 	Base::DrawTreeNode(ctrl, bOpen, bSelected, iLabelHeight, iLabelWidth, iHalfWay, iLastBranch, bIsRoot);
 }
 
-inline void Gwen::Skin::SkinBase::DrawCategoryHolder(Controls::Base * ctrl)
+void Gwen::Skin::SkinBase::DrawCategoryHolder(Controls::Base * ctrl)
 {
 	Textures.CategoryList.Outer.Draw(GetRender(), ctrl->GetRenderBounds());
 }
 
-inline void Gwen::Skin::SkinBase::DrawCategoryInner(Controls::Base * ctrl, bool bCollapsed)
+void Gwen::Skin::SkinBase::DrawCategoryInner(Controls::Base * ctrl, bool bCollapsed)
 {
 	if (bCollapsed)
 	{
@@ -853,7 +1519,7 @@ Gwen::Texture* Gwen::Skin::SkinBase::GetTexture(String textName)const
 		return it->second;
 
 	//return a null texture
-	return nullptr;
+	return m_missingTexture;
 }
 
 void Gwen::Skin::SkinBase::setTexture(Texturing::Bordered & texture, const tinyxml2::XMLElement * baseElement)
@@ -865,12 +1531,18 @@ void Gwen::Skin::SkinBase::setTexture(Texturing::Bordered & texture, const tinyx
 	if (baseElement == nullptr)
 		return;
 
-	const tinyxml2::XMLElement* textureElement = baseElement->FirstChildElement("color");
-	if (textureElement)
+	const tinyxml2::XMLElement* textureElement = baseElement->FirstChildElement("texture");
+	if (textureElement == NULL)
 		return;
 
 	//get the texture reference
+#if 1
 	textureName = textureElement->Attribute("name");
+#else
+	const char * text;
+	textureElement->QueryStringAttribute("name", &text);
+	textureName = text;
+#endif
 
 	//get skin position in texture
 	x = textureElement->FloatAttribute("x");
@@ -898,7 +1570,7 @@ void Gwen::Skin::SkinBase::setTexture(Texturing::Single & texture, const tinyxml
 		return;
 
 	const tinyxml2::XMLElement* textureElement = baseElement->FirstChildElement("color");
-	if (textureElement)
+	if (!textureElement)
 		return;
 
 	//get the texture reference
@@ -918,15 +1590,37 @@ void Gwen::Skin::SkinBase::setTexture(Texturing::Single & texture, const tinyxml
 
 void Gwen::Skin::SkinBase::setColor(Gwen::Color & color, const tinyxml2::XMLElement * baseElement)
 {
+	String textureName;
+	char r, g, b, a;
+	int x, y;
+
 	//TODO: Assert Here
 	if (baseElement == nullptr)
 		return;
 
 	const tinyxml2::XMLElement* colorElement = baseElement->FirstChildElement("color");
-	if (colorElement)
+	if (!colorElement)
 		return;
 
+	//set color only
+	r = colorElement->IntAttribute("r");
+	g = colorElement->IntAttribute("g");
+	b = colorElement->IntAttribute("b");
+	a = colorElement->IntAttribute("a");
 
+	x = colorElement->IntAttribute("x");
+	y = colorElement->IntAttribute("y");
+
+	//get the color from image
+	if ( x > -1 && y > -1 )
+	{
+		//get the texture reference
+		textureName = colorElement->Attribute("name");
+		color = GetRender()->PixelColour(GetTexture(textureName), x, y, Color(r, g, b, a));
+	}
+	else
+		//set the color
+		color = GetRender()->PixelColour(NULL, 0, 0, Color(r, g, b, a));
 }
 
 void Gwen::Skin::SkinBase::SetDefaltSkin(void)
