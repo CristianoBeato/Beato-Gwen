@@ -47,17 +47,17 @@ namespace Gwen
 {
 	namespace Renderer
 	{
-		SDL::SDL()
+		SDL::SDL(void)
 		{
 			m_RenderWindow = NULL;
 			m_RenderContext = NULL;
 		}
 
-		SDL::~SDL()
+		SDL::~SDL(void)
 		{
 		}
 
-		void SDL::Init()
+		void SDL::Init(void)
 		{
 		}
 		
@@ -65,7 +65,7 @@ namespace Gwen
 		{
 		}
 
-		void SDL::Begin()
+		void SDL::Begin(void)
 		{
 			//Check for render context
 			if (!m_RenderContext)
@@ -76,7 +76,7 @@ namespace Gwen
 			SDL_RenderClear(m_RenderContext);
 		}
 
-		void SDL::End()
+		void SDL::End(void)
 		{
 		}
 
@@ -214,7 +214,7 @@ namespace Gwen
 			SDL_SetRenderDrawColor(m_RenderContext, color.r, color.g, color.b, color.a);
 		}
 
-		void SDL::StartClip()
+		void SDL::StartClip(void)
 		{
 			const Gwen::Rect rect = ClipRegion();
 		
@@ -223,7 +223,7 @@ namespace Gwen
 			SDL_RenderSetClipRect(m_RenderContext, &clip);
 		};
 
-		void SDL::EndClip()
+		void SDL::EndClip(void)
 		{
 			SDL_Rect clip;
 			//get the clip and set to clip only the selected area 
@@ -255,6 +255,66 @@ namespace Gwen
 			}
 		}
 		
+		void SDL::LoadTexture(Gwen::Texture* pTexture,
+			unsigned int w,
+			unsigned int h,
+			unsigned char bits,
+			const char* col)
+		{
+			Uint32 rmask, gmask, bmask, amask;
+			int depth, pitch;
+			//The final texture
+			SDL_Texture* newTexture = NULL;
+
+			// Set up the pixel format color masks for RGB(A) byte arrays.
+			// Only STBI_rgb (3) and STBI_rgb_alpha (4) are supported here!
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+			rmask = 0xff000000;
+			gmask = 0x00ff0000;
+			bmask = 0x0000ff00;
+			amask = 0x000000ff;
+#else // little endian, like x86
+			rmask = 0x000000ff;
+			gmask = 0x0000ff00;
+			bmask = 0x00ff0000;
+			amask = 0xff000000;
+#endif
+				
+			//8 bit color precision
+			depth = 8 * bits;
+			pitch = bits * w; // 3 bytes per pixel * pixels per row
+	
+			//Load image at specified path		
+			SDL_Surface* loadedSurface = SDL_CreateRGBSurfaceFrom((void*)col, w, h, depth, pitch, rmask, gmask, bmask, amask);
+
+			if (loadedSurface == NULL)
+			{
+				printf("Unable to load image %s! SDL_image Error: %s\n", pTexture->getName().c_str(), SDL_GetError());
+				return;
+			}
+
+			//Color key image
+			SDL_SetColorKey(loadedSurface, SDL_TRUE, SDL_MapRGB(loadedSurface->format, 0, 0xFF, 0xFF));
+
+			//Create texture from surface pixels
+			newTexture = SDL_CreateTextureFromSurface(m_RenderContext, loadedSurface);
+			if (newTexture == NULL)
+			{
+				//Get rid of old loaded surface
+				SDL_FreeSurface(loadedSurface);
+
+				printf("Unable to create texture from %s! SDL Error: %s\n", pTexture->getName().c_str(), SDL_GetError());
+				return;
+			}
+
+			//Get image dimensions
+			pTexture->getWidth() = w;
+			pTexture->getHeight() = h;
+
+			//Return success
+			pTexture->getData() = static_cast<void*>(newTexture);
+		}
+		
 		void SDL::LoadTexture(Gwen::Texture* pTexture)
 		{
 			//The final texture
@@ -275,6 +335,9 @@ namespace Gwen
 			newTexture = SDL_CreateTextureFromSurface(m_RenderContext, loadedSurface);
 			if (newTexture == NULL)
 			{
+				//Get rid of old loaded surface
+				SDL_FreeSurface(loadedSurface);
+
 				printf("Unable to create texture from %s! SDL Error: %s\n", pTexture->getName().c_str(), SDL_GetError());
 				return;
 			}

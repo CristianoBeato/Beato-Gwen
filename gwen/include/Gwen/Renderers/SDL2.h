@@ -41,6 +41,11 @@ namespace Gwen
 				virtual void FreeFont(Gwen::Font* pFont);
 				virtual void LoadTexture( Gwen::Texture* pTexture );
 				virtual void FreeTexture( Gwen::Texture* pTexture );
+				virtual void LoadTexture(Gwen::Texture* pTexture,
+					unsigned int w,
+					unsigned int h,
+					unsigned char bits,
+					const char* col);
 
 				virtual Gwen::Point MeasureText(Gwen::Font* pFont, const Gwen::UnicodeString & text);
 				Gwen::Color PixelColour( Gwen::Texture* pTexture, unsigned int x, unsigned int y, const Gwen::Color & col_default );

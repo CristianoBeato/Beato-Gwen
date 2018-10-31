@@ -22,6 +22,11 @@ namespace Gwen
 		~Texture(void){}
 
 		void	Load(const TextObject & str, Gwen::Renderer::Base* render);
+
+//Beato Begin: Internal loade
+		void	Load(const TextObject & name, unsigned int width, unsigned int height, unsigned char bits,
+			const char * pixelBuff, Gwen::Renderer::Base * render);
+//Beato End
 		void	Release(Gwen::Renderer::Base* render);
 		bool	FailedToLoad(void) const;
 		

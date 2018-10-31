@@ -56,6 +56,9 @@ namespace Gwen
 				virtual void EndClip() {};
 
 				virtual void LoadTexture( Gwen::Texture* pTexture ) {};
+//Beato Begin: load texture texternaly
+				virtual void LoadTexture(Gwen::Texture* pTexture, const int w, const int h,  const char* col ) {};
+//Beato End;
 				virtual void FreeTexture( Gwen::Texture* pTexture ) {};
 				virtual void DrawTexturedRect( Gwen::Texture* pTexture, Gwen::Rect pTargetRect, float u1 = 0.0f, float v1 = 0.0f, float u2 = 1.0f, float v2 = 1.0f ) {};
 				virtual void DrawMissingImage( Gwen::Rect pTargetRect );

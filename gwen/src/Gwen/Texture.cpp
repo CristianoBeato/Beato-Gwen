@@ -47,6 +47,16 @@ void Gwen::Texture::Load(const TextObject & str, Gwen::Renderer::Base * render)
 	render->LoadTexture(this);
 }
 
+void Gwen::Texture::Load(const TextObject & _name,
+	unsigned int width, unsigned int height, unsigned char bits,
+	const char * pixelBuff,
+	Gwen::Renderer::Base * render)
+{
+	this->name = _name;
+	Gwen::Debug::AssertCheck(render != NULL, "No renderer!");
+	render->LoadTexture(this, width, height, bits, pixelBuff);
+}
+
 void Gwen::Texture::Release(Gwen::Renderer::Base * render)
 {
 	render->FreeTexture(this);
