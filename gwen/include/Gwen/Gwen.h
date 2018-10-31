@@ -54,6 +54,7 @@
 //SDL 2 Specific platform
 #include "Gwen/Input/SDL2.h"
 #include "Gwen/Renderers/SDL2.h"
+#include "Gwen/Renderers/OpenGL.h"
 #include "Gwen/Platforms/Platform.h"
 
 // Enable the hook system (se Hook.h)
