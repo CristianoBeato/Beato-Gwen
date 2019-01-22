@@ -2,7 +2,7 @@
 	GWEN
 
 	Copyright (c) 2010 Facepunch Studios
-	Copyright (c) 2017-2018 Cristiano Beato
+	Copyright (c) 2017-2019 Cristiano Beato
 
 
 	MIT License
@@ -32,16 +32,16 @@
 #include "Gwen/Gwen.h"
 #include "Gwen/Events.h"
 #include "Gwen/Controls.h"
-#include "Gwen/Font.h"
+#include "Gwen/Fonts/Font.h"
 #include "Gwen/ControlList.h"
 #include "Gwen/Config.h"
 #include "Gwen/Align.h"
 #include "Gwen/DragAndDrop.h"
 #include "Gwen/Hook.h"
 #include "Gwen/InputHandler.h"
-#include "Gwen/Skin.h"
+#include "Gwen/Skins/Skin.h"
 #include "Gwen/Structures.h"
-#include "Gwen/Texture.h"
+#include "Gwen/texture/Texture.h"
 #include "Gwen/Utility.h"
 #include "Gwen/ToolTip.h"
 #include "Gwen/WindowProvider.h"
@@ -52,8 +52,6 @@
 #include "Gwen/Input/SDL2.h"
 #include "Gwen/Platforms/Platform.h"
 #include "Gwen/Controls/Base.h"
-
-//#include "../contrib/tinyxml/tinyxml.h"
 
 #endif // !_PRECOMPILED_H_
 

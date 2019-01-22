@@ -10,7 +10,7 @@
 
 #include "Gwen/Controls/Dragger.h"
 #include "Gwen/Gwen.h"
-#include "Gwen/Skin.h"
+#include "Gwen/Skins/Skin.h"
 
 namespace Gwen
 {

@@ -3,7 +3,7 @@
 GWEN
 
 Copyright (c) 2010 Facepunch Studios
-Copyright (c) 2017-2018 Cristiano Beato
+Copyright (c) 2017-2019 Cristiano Beato
 
 MIT License
 
@@ -50,17 +50,19 @@ void Gwen::Skin::Texturing::Single::Init(Texture * pTexture, float x, float y, f
 	this->iHeight = h;
 }
 
-void Gwen::Skin::Texturing::Single::Draw(Renderer::Base * render, Rect r, const Color & col)
+void Gwen::Skin::Texturing::Single::Draw(Renderer::BaseRender * render, Rect r, const Color & col)
 {
-	if (!texture) { return; }
+	if (!texture)
+		return;
 
 	render->SetDrawColor(col);
 	render->DrawTexturedRect(texture, r, uv[0], uv[1], uv[2], uv[3]);
 }
 
-void Gwen::Skin::Texturing::Single::DrawCenter(Renderer::Base * render, Rect r, const Color & col)
+void Gwen::Skin::Texturing::Single::DrawCenter(Renderer::BaseRender * render, Rect r, const Color & col)
 {
-	if (!texture) { return; }
+	if (!texture)
+		return;
 
 	r.x += (r.w - iWidth) * 0.5;
 	r.y += (r.h - iHeight) * 0.5;
@@ -69,7 +71,7 @@ void Gwen::Skin::Texturing::Single::DrawCenter(Renderer::Base * render, Rect r, 
 	Draw(render, r, col);
 }
 
-Gwen::Skin::Texturing::Bordered::Bordered()
+Gwen::Skin::Texturing::Bordered::Bordered(void)
 {
 	texture = NULL;
 }
@@ -109,9 +111,10 @@ void Gwen::Skin::Texturing::Bordered::SetRect(int iNum, float x, float y, float 
 	//	rects[iNum].uv[1] += 1.0f / texture->width;
 }
 
-void Gwen::Skin::Texturing::Bordered::Draw(Gwen::Renderer::Base * render, Gwen::Rect r, const Gwen::Color & col, bool b1, bool b2, bool b3, bool b4, bool b5, bool b6, bool b7, bool b8, bool b9)
+void Gwen::Skin::Texturing::Bordered::Draw(Gwen::Renderer::BaseRender * render, Gwen::Rect r, const Gwen::Color & col, bool b1, bool b2, bool b3, bool b4, bool b5, bool b6, bool b7, bool b8, bool b9)
 {
-	if (!texture) { return; }
+	if (!texture)
+		return;
 
 	render->SetDrawColor(col);
 
@@ -123,28 +126,38 @@ void Gwen::Skin::Texturing::Bordered::Draw(Gwen::Renderer::Base * render, Gwen::
 		return;
 	}
 
-	if (b1) { DrawRect(render, 0, r.x, r.y, margin.left, margin.top); }
+	if (b1)
+		DrawRect(render, 0, r.x, r.y, margin.left, margin.top);
 
-	if (b2) { DrawRect(render, 1, r.x + margin.left, r.y, r.w - margin.left - margin.right, margin.top); }
+	if (b2)
+		DrawRect(render, 1, r.x + margin.left, r.y, r.w - margin.left - margin.right, margin.top);
 
-	if (b3) { DrawRect(render, 2, (r.x + r.w) - margin.right, r.y, margin.right, margin.top); }
+	if (b3)
+		DrawRect(render, 2, (r.x + r.w) - margin.right, r.y, margin.right, margin.top);
 
-	if (b4) { DrawRect(render, 3, r.x, r.y + margin.top, margin.left, r.h - margin.top - margin.bottom); }
+	if (b4)
+		DrawRect(render, 3, r.x, r.y + margin.top, margin.left, r.h - margin.top - margin.bottom);
 
-	if (b5) { DrawRect(render, 4, r.x + margin.left, r.y + margin.top, r.w - margin.left - margin.right, r.h - margin.top - margin.bottom); }
+	if (b5)
+		DrawRect(render, 4, r.x + margin.left, r.y + margin.top, r.w - margin.left - margin.right, r.h - margin.top - margin.bottom);
 
-	if (b6) { DrawRect(render, 5, (r.x + r.w) - margin.right, r.y + margin.top, margin.right, r.h - margin.top - margin.bottom); }
+	if (b6)
+		DrawRect(render, 5, (r.x + r.w) - margin.right, r.y + margin.top, margin.right, r.h - margin.top - margin.bottom);
 
-	if (b7) { DrawRect(render, 6, r.x, (r.y + r.h) - margin.bottom, margin.left, margin.bottom); }
+	if (b7)
+		DrawRect(render, 6, r.x, (r.y + r.h) - margin.bottom, margin.left, margin.bottom);
 
-	if (b8) { DrawRect(render, 7, r.x + margin.left, (r.y + r.h) - margin.bottom, r.w - margin.left - margin.right, margin.bottom); }
+	if (b8)
+		DrawRect(render, 7, r.x + margin.left, (r.y + r.h) - margin.bottom, r.w - margin.left - margin.right, margin.bottom);
 
-	if (b9) { DrawRect(render, 8, (r.x + r.w) - margin.right, (r.y + r.h) - margin.bottom, margin.right, margin.bottom); }
+	if (b9)
+		DrawRect(render, 8, (r.x + r.w) - margin.right, (r.y + r.h) - margin.bottom, margin.right, margin.bottom);
 }
 
-void Gwen::Skin::Texturing::Bordered::DrawRect(Gwen::Renderer::Base * render, int i, int x, int y, int w, int h)
+void Gwen::Skin::Texturing::Bordered::DrawRect(Gwen::Renderer::BaseRender * render, int i, int x, int y, int w, int h)
 {
 	render->DrawTexturedRect(texture,
 		Gwen::Rect(x, y, w, h),
 		rects[i].uv[0], rects[i].uv[1], rects[i].uv[2], rects[i].uv[3]);
 }
+

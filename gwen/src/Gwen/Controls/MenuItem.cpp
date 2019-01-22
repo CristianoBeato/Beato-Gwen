@@ -32,7 +32,6 @@ THE SOFTWARE.
 
 #include "Gwen/Gwen.h"
 #include "Gwen/Controls/MenuItem.h"
-#include "Gwen/Skin.h"
 
 using namespace Gwen;
 using namespace Gwen::Controls;

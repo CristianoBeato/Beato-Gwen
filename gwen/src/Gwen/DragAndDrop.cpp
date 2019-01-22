@@ -3,7 +3,7 @@
 GWEN
 
 Copyright (c) 2010 Facepunch Studios
-Copyright (c) 2017-2018 Cristiano Beato
+Copyright (c) 2017-2019 Cristiano Beato
 
 MIT License
 
@@ -30,10 +30,7 @@ THE SOFTWARE.
 #include "precompiled.h"
 #pragma hdrstop
 
-#include "Gwen/Gwen.h"
 #include "Gwen/DragAndDrop.h"
-#include "Gwen/Utility.h"
-#include "Gwen/Platforms/Platform.h"
 
 using namespace Gwen;
 using namespace Gwen::DragAndDrop;

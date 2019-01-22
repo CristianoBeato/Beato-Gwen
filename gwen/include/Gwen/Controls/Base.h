@@ -18,7 +18,7 @@
 #include "Gwen/Events.h"
 #include "Gwen/Utility.h"
 #include "Gwen/TextObject.h"
-#include "Gwen/Skin.h"
+#include "Gwen/Skins/Skin.h"
 #include "Gwen/ControlList.h"
 #include "Gwen/UserData.h"
 

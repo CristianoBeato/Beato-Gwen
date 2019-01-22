@@ -32,7 +32,6 @@ THE SOFTWARE.
 
 #include "Gwen/Gwen.h"
 #include "Gwen/Controls/TextBox.h"
-#include "Gwen/Skin.h"
 #include "Gwen/Utility.h"
 #include "Gwen/Platforms/Platform.h"
 

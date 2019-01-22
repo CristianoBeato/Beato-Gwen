@@ -10,7 +10,7 @@
 
 #include "Gwen/Gwen.h"
 #include "Gwen/Controls/Button.h"
-#include "Gwen/Skin.h"
+#include "Gwen/Skins/Skin.h"
 
 
 namespace Gwen

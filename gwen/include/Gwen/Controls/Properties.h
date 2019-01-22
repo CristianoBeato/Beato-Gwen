@@ -4,7 +4,6 @@
 	See license in Gwen.h
 */
 
-#pragma once
 #ifndef GWEN_CONTROLS_PROPERTIES_H
 #define GWEN_CONTROLS_PROPERTIES_H
 
@@ -14,7 +13,7 @@
 #include "Gwen/Controls/Property/Text.h"
 #include "Gwen/Controls/SplitterBar.h"
 #include "Gwen/Gwen.h"
-#include "Gwen/Skin.h"
+#include "Gwen/Skins/Skin.h"
 
 
 namespace Gwen

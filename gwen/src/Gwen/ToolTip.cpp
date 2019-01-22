@@ -31,7 +31,6 @@ THE SOFTWARE.
 #pragma hdrstop
 
 #include "Gwen/ToolTip.h"
-#include "Gwen/Utility.h"
 
 using namespace Gwen;
 using namespace Gwen::Controls;
@@ -65,7 +64,7 @@ namespace ToolTip
 	{
 		if ( !g_ToolTip ) { return; }
 
-		Gwen::Renderer::Base* render = skin->GetRender();
+		Gwen::Renderer::BaseRender* render = skin->GetRender();
 		Gwen::Point pOldRenderOffset = render->GetRenderOffset();
 		Gwen::Point MousePos = Input::GetMousePosition();
 		Gwen::Rect Bounds = g_ToolTip->GetToolTip()->GetBounds();

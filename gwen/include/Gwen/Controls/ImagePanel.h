@@ -11,7 +11,7 @@
 #include "Gwen/Gwen.h"
 #include "Gwen/Controls/Base.h"
 #include "Gwen/Renderers/BaseRender.h"
-#include "Gwen/Texture.h"
+#include "Gwen/texture/Texture.h"
 
 namespace Gwen
 {

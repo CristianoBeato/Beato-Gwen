@@ -15,7 +15,7 @@
 #include "Gwen/Controls/Label.h"
 #include "Gwen/Controls/Resizer.h"
 #include "Gwen/Gwen.h"
-#include "Gwen/Skin.h"
+#include "Gwen/Skins/Skin.h"
 
 namespace Gwen
 {

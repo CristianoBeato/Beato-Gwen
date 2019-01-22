@@ -32,7 +32,6 @@ THE SOFTWARE.
 
 #include "Gwen/Gwen.h"
 #include "Gwen/Controls/PropertyTree.h"
-#include "Gwen/Skin.h"
 
 namespace Gwen
 {

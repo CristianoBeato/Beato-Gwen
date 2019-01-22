@@ -31,7 +31,6 @@ THE SOFTWARE.
 #pragma hdrstop
 
 #include "Gwen/Gwen.h"
-#include "Gwen/Skin.h"
 #include "Gwen/Controls/DockBase.h"
 #include "Gwen/Controls/DockedTabControl.h"
 #include "Gwen/Controls/Highlight.h"
@@ -358,9 +357,10 @@ void DockBase::DragAndDrop_Hover( Gwen::DragAndDrop::Package* /*pPackage*/, int 
 
 void DockBase::RenderOver( Skin::Base* skin )
 {
-	if ( !m_bDrawHover ) { return; }
+	if ( !m_bDrawHover )
+		return;
 
-	Gwen::Renderer::Base* render = skin->GetRender();
+	Gwen::Renderer::BaseRender* render = skin->GetRender();
 	render->SetDrawColor( Gwen::Color( 255, 100, 255, 20 ) );
 	render->DrawFilledRect( GetRenderBounds() );
 

@@ -31,10 +31,6 @@ THE SOFTWARE.
 #pragma hdrstop
 
 #include "Gwen/InputHandler.h"
-#include "Gwen/Controls/Base.h"
-#include "Gwen/DragAndDrop.h"
-#include "Gwen/Hook.h"
-#include "Gwen/Platforms/Platform.h"
 
 #define DOUBLE_CLICK_SPEED 0.5f
 #define MAX_MOUSE_BUTTONS 5

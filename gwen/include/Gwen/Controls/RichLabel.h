@@ -24,7 +24,7 @@ namespace Gwen
 				GWEN_CONTROL( RichLabel, Gwen::Controls::Base );
 
 				void AddLineBreak();
-				void AddText( const Gwen::TextObject & text, Gwen::Color color, Gwen::Font* font = NULL );
+				void AddText( const Gwen::TextObject & text, Gwen::Color color, Gwen::Font::FontBase* font = NULL );
 
 				virtual bool SizeToChildren( bool w = true, bool h = true );
 
@@ -42,11 +42,11 @@ namespace Gwen
 					unsigned char			type;
 					Gwen::UnicodeString		text;
 					Gwen::Color				color;
-					Gwen::Font*				font;
+					Gwen::Font::FontBase*				font;
 				};
 
 				void Layout( Gwen::Skin::Base* skin );
-				void SplitLabel( const Gwen::UnicodeString & text, Gwen::Font* pFont, const DividedText & txt, int & x, int & y, int & lineheight );
+				void SplitLabel( const Gwen::UnicodeString & text, Gwen::Font::FontBase* pFont, const DividedText & txt, int & x, int & y, int & lineheight );
 				void CreateNewline( int & x, int & y, int & lineheight );
 				void CreateLabel( const Gwen::UnicodeString & text, const DividedText & txt, int & x, int & y, int & lineheight, bool NoSplit );
 				void Rebuild();

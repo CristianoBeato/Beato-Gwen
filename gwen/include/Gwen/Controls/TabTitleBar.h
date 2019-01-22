@@ -12,7 +12,6 @@
 #include "Gwen/Controls/Label.h"
 #include "Gwen/Controls/TabButton.h"
 #include "Gwen/DragAndDrop.h"
-#include "Gwen/Skin.h"
 
 namespace Gwen
 {

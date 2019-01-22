@@ -34,6 +34,12 @@ THE SOFTWARE.
 #include "Gwen/Controls/Label.h"
 #include "Gwen/Utility.h"
 
+#if USE_SDL_FONT
+#include "Gwen/Fonts/SDL_Font.h"
+#else
+#include "Gwen/Fonts/STB_Font.h"
+#endif
+
 using namespace Gwen;
 using namespace Gwen::Controls;
 
@@ -123,11 +129,15 @@ void Label::SetFont( Gwen::UnicodeString strFacename, int iSize, bool bBold )
 		SetFont( NULL );
 	}
 
-	m_CreatedFont = new Gwen::Font();
+#if USE_SDL_FONT
+	m_CreatedFont = new Gwen::Font::SDLFont();
+#else
+	m_CreatedFont = new Gwen::Font::STBFont();
+#endif
 	Debug::AssertCheck( m_CreatedFont != NULL, "Couldn't Create Font!" );
-	m_CreatedFont->bold = bBold;
-	m_CreatedFont->facename = strFacename;
-	m_CreatedFont->size = iSize;
+	m_CreatedFont->SetBold(bBold);
+	m_CreatedFont->SetFaceName(strFacename);
+	m_CreatedFont->SetSize(iSize);
 	SetFont( m_CreatedFont );
 	m_Text->RefreshSize();
 }

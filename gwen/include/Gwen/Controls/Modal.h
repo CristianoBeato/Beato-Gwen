@@ -4,8 +4,6 @@
 
 #include "Gwen/Controls/Base.h"
 #include "Gwen/Gwen.h"
-#include "Gwen/Skin.h"
-
 
 namespace Gwen
 {

@@ -36,7 +36,7 @@ THE SOFTWARE.
 
 Gwen::Texture* Gwen::Skin::SkinBase::m_missingTexture = NULL;
 
-Gwen::Skin::SkinBase::SkinBase(Gwen::Renderer::Base * renderer) : Gwen::Skin::Base(renderer)
+Gwen::Skin::SkinBase::SkinBase(Gwen::Renderer::BaseRender * renderer) : Gwen::Skin::Base(renderer)
 {
 }
 
@@ -45,47 +45,39 @@ Gwen::Skin::SkinBase::~SkinBase(void)
 	Clear();
 }
 
-bool Gwen::Skin::SkinBase::Init(const TextObject & SkinXml)
+void Gwen::Skin::SkinBase::Init(const char* skinPath)
 {
-	char * buff = NULL;
-
+	char * charBuff = nullptr;
+	
 	//file strteam from the src xml
-	Platform::Stream	*srcFile = new Platform::FileStream;
+	Platform::SmartPtr<Platform::FileStream> srcFile = Platform::SmartPtr<Platform::FileStream>( new Platform::FileStream());
 	
 	//Try Open the file to read
-	if (!srcFile->open(SkinXml.c_str(), "r"))
+	if (!srcFile->open(skinPath, "r"))
 	{
 		//use defalt set
 		SetDefaltSkin();
-
-		delete srcFile;
-		return false;
+		return;
 	}
 	
 	//Read src
-	size_t fileSize = srcFile->size();
-	buff = (char*)SDL_malloc(fileSize);
-	srcFile->read(buff, fileSize);
-
-	//can free the file handler
-	delete srcFile;
+	const size_t size = srcFile->size();
+	charBuff = new char[size + 1];
+	srcFile->read(charBuff, size);
 
 	//parse the src
-	bool ret = Init(buff, fileSize);
+	Init(charBuff, size);
 
-	//free the src ptr
-	SDL_free(buff);
-
-	return ret;
+	delete charBuff;
+	charBuff = nullptr;
 }
 
-bool Gwen::Skin::SkinBase::Init(const char * buff, size_t size)
+void Gwen::Skin::SkinBase::Init(const char * buff, size_t size)
 { 
 	tinyxml2::XMLElement* skinElement;
-	tinyxml2::XMLDocument *skinDocument = NULL;
 
 	//create the XML interation, and 
-	skinDocument = new tinyxml2::XMLDocument;
+	Platform::SmartPtr<tinyxml2::XMLDocument> skinDocument = new tinyxml2::XMLDocument;
 	skinDocument->Parse(buff, size);
 
 	//create the defalt texture
@@ -111,9 +103,8 @@ bool Gwen::Skin::SkinBase::Init(const char * buff, size_t size)
 		//use defalt set
 		SetDefaltSkin();
 
-		delete skinDocument;
 		//TODO: handler error here
-		return false;
+		return;
 	}
 
 	//star get the documents elements
@@ -833,12 +824,11 @@ bool Gwen::Skin::SkinBase::Init(const char * buff, size_t size)
 		//use defalt set
 		SetDefaltSkin();
 
-		delete skinDocument;
 		//TODO: handler error here
-		return false;
+		return;
 	}
 
-	return true;
+	return;
 }
 
 void Gwen::Skin::SkinBase::Clear(void)
@@ -960,27 +950,25 @@ void Gwen::Skin::SkinBase::DrawGroupBox(Gwen::Controls::Base * control, int text
 void Gwen::Skin::SkinBase::DrawTextBox(Gwen::Controls::Base * control)
 {
 	if (control->IsDisabled())
-	{
 		return Textures.TextBox.Disabled.Draw(GetRender(), control->GetRenderBounds());
-	}
+	
 
 	if (control->HasFocus())
-	{
 		Textures.TextBox.Focus.Draw(GetRender(), control->GetRenderBounds());
-	}
 	else
-	{
 		Textures.TextBox.Normal.Draw(GetRender(), control->GetRenderBounds());
-	}
 }
 
 void Gwen::Skin::SkinBase::DrawActiveTabButton(Gwen::Controls::Base * control, int dir)
 {
-	if (dir == Pos::Bottom) { return Textures.Tab.Bottom.Active.Draw(GetRender(), control->GetRenderBounds() + Rect(0, -8, 0, 8)); }
+	if (dir == Pos::Bottom)
+		return Textures.Tab.Bottom.Active.Draw(GetRender(), control->GetRenderBounds() + Rect(0, -8, 0, 8));
 
-	if (dir == Pos::Top) { return Textures.Tab.Top.Active.Draw(GetRender(), control->GetRenderBounds() + Rect(0, 0, 0, 8)); }
+	if (dir == Pos::Top)
+		return Textures.Tab.Top.Active.Draw(GetRender(), control->GetRenderBounds() + Rect(0, 0, 0, 8));
 
-	if (dir == Pos::Left) { return Textures.Tab.Left.Active.Draw(GetRender(), control->GetRenderBounds() + Rect(0, 0, 8, 0)); }
+	if (dir == Pos::Left)
+		return Textures.Tab.Left.Active.Draw(GetRender(), control->GetRenderBounds() + Rect(0, 0, 8, 0));
 
 	if (dir == Pos::Right) { return Textures.Tab.Right.Active.Draw(GetRender(), control->GetRenderBounds() + Rect(-8, 0, 8, 0)); }
 }
@@ -1482,12 +1470,12 @@ void Gwen::Skin::SkinBase::DrawCategoryInner(Controls::Base * ctrl, bool bCollap
 
 void Gwen::Skin::SkinBase::LoadTexture(const String textName, String textPath)
 {
-	Uint16 imgHash = 0;
+	size_t imgHash = 0;
 	std::hash<Gwen::String>	hashstring;
 
 	//reserve texture memory
 	Gwen::Texture *newTexture = new Texture;
-	newTexture->Load(textName, GetRender());
+	newTexture->Load(textPath, GetRender());
 
 	//check for fail
 	if (newTexture->FailedToLoad())
@@ -1505,13 +1493,13 @@ void Gwen::Skin::SkinBase::LoadTexture(const String textName, String textPath)
 
 Gwen::Texture* Gwen::Skin::SkinBase::GetTexture(String textName)const
 {
-	Uint16 imgHash = 0;
+	size_t imgHash = 0;
 	std::hash<Gwen::String>	hashstring;
 
 	//get the name hash
 	imgHash = hashstring(textName);
 
-	std::map<Uint16, Texture*>::const_iterator it;
+	std::map<size_t, Texture*>::const_iterator it;
 	it = m_skinTextures.find(imgHash);
 
 	//check if find it
@@ -1626,8 +1614,8 @@ void Gwen::Skin::SkinBase::setColor(Gwen::Color & color, const tinyxml2::XMLElem
 void Gwen::Skin::SkinBase::SetDefaltSkin(void)
 {
 	//setup the defalt skin set
-	m_DefaultFont.facename = L"OpenSans";
-	m_DefaultFont.size = 11;
+	m_DefaultFont->FaceName() = L"OpenSans";
+	m_DefaultFont->Size() = 11;
 
 	//m_Texture.Load(L"DefaultSkin", GetRender());
 	LoadTexture("DefaultSkin", "DefaultSkin");

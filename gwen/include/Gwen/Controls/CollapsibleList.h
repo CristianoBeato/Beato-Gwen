@@ -4,7 +4,6 @@
 	See license in Gwen.h
 */
 
-#pragma once
 #ifndef GWEN_CONTROLS_COLLAPSIBLELIST_H
 #define GWEN_CONTROLS_COLLAPSIBLELIST_H
 
@@ -12,7 +11,6 @@
 #include "Gwen/Controls/Button.h"
 #include "Gwen/Controls/ScrollControl.h"
 #include "Gwen/Gwen.h"
-#include "Gwen/Skin.h"
 #include "Gwen/Controls/CollapsibleCategory.h"
 
 

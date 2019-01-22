@@ -43,13 +43,10 @@
 #include "Gwen/Config.h"
 #include "Gwen/Exports.h"
 #include "Gwen/Structures.h"
-#include "Gwen/Skin.h"
+#include "Gwen/Skins/Skin.h"
 #include "Gwen/Controls/Base.h"
 #include "Gwen/Controls/Canvas.h"
 #include "Gwen/Align.h"
-
-//
-//#include "Gwen/Skins/SkinBase.h"
 
 //SDL 2 Specific platform
 #include "Gwen/Input/SDL2.h"
@@ -68,9 +65,14 @@ namespace Gwen
 		class Canvas;
 	}
 
+	namespace Font
+	{
+		class FontBase;
+	}
+
 	namespace Renderer
 	{
-		class Base;
+		class BaseRender;
 	}
 
 	namespace Debug

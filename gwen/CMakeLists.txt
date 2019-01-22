@@ -87,6 +87,11 @@ file(GLOB CONTROLS_PPT_SOURCES src/Gwen/Controls/Property/*.cpp)
 source_group("Controls\\Property" FILES ${CONTROLS_PPT_INCLUDES})
 source_group("Controls\\Property" FILES ${CONTROLS_PPT_SOURCES})
 
+file(GLOB FONT_INCLUDES include/Gwen/Font/*.h)
+file(GLOB FONT_SOURCES src/Gwen/Font/*.cpp)
+source_group("Fonts" FILES ${FONT_INCLUDES})
+source_group("Fonts" FILES ${FONT_SOURCES})
+
 file(GLOB INPUT_INCLUDES include/Gwen/Input/*.h)
 file(GLOB INPUT_SOURCES src/Gwen/Input/*.cpp)
 source_group("Input" FILES ${INPUT_INCLUDES})
@@ -102,15 +107,15 @@ file(GLOB RENDERERS_SOURCES src/Gwen/Renderers/*.cpp)
 source_group("Renderers" FILES ${RENDERERS_INCLUDES})
 source_group("Renderers" FILES ${RENDERERS_SOURCES})
 
-file(GLOB RENDERERS_INCLUDES include/Gwen/Renderers/*.h)
-file(GLOB RENDERERS_SOURCES src/Gwen/Renderers/*.cpp)
-source_group("Renderers" FILES ${RENDERERS_INCLUDES})
-source_group("Renderers" FILES ${RENDERERS_SOURCES})
-
 file(GLOB SKINS_INCLUDES include/Gwen/Skins/*.h)
 file(GLOB SKINS_SOURCES src/Gwen/Skins/*.cpp)
 source_group("Skins" FILES ${SKINS_INCLUDES})
 source_group("Skins" FILES ${SKINS_SOURCES})
+
+file(GLOB TEXTURE_INCLUDES include/Gwen/texture/*.h)
+file(GLOB TEXTURE_SOURCES src/Gwen/texture/*.cpp)
+source_group("texture" FILES ${TEXTURE_INCLUDES})
+source_group("texture" FILES ${TEXTURE_SOURCES})
 
 #contrib
 file(GLOB CONTRIB_TINYXML_INCLUDES src/contrib/tinyxml2/*.h)
@@ -125,11 +130,13 @@ set(INC_GWEN
 	${CONTROLS_DLG_INCLUDES}
 	${CONTROLS_LYT_INCLUDES}
 	${CONTROLS_PPT_INCLUDES}
+	${FONT_INCLUDES}
 	${INPUT_INCLUDES}
 	${PLATF_INCLUDES}
 	${RENDERERS_INCLUDES}
 	${CONTRIB_TINYXML_INCLUDES}
 	${SKINS_INCLUDES}
+	${TEXTURE_INCLUDES}
 )
 
 set( SRC_GWEN
@@ -137,11 +144,13 @@ set( SRC_GWEN
 	${CONTROLS_SOURCES}
 	${CONTROLS_DLG_SOURCES}
 	${CONTROLS_LYT_SOURCES}
+	${FONT_SOURCES}
 	${INPUT_SOURCES}
 	${PLATF_SOURCES}
 	${RENDERERS_SOURCES}
 	${CONTRIB_TINYXML_SOURCES}
 	${SKINS_SOURCES}
+	${TEXTURE_SOURCES}
 )
 
 include_directories(${CMAKE_SOURCE_DIR})

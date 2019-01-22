@@ -34,67 +34,68 @@ THE SOFTWARE.
 
 namespace Gwen
 {
-	struct Font;
 	class Texture;
 	class WindowProvider;
 
+	namespace Font
+	{
+		class FontBase;
+	}
+
 	namespace Renderer
 	{
-		class Base;
+		class BaseRender;
 
 		class ICacheToTexture
 		{
 			public:
 
-				virtual ~ICacheToTexture() {}
-				virtual void Initialize() = 0;
-				virtual void ShutDown() = 0;
+				virtual ~ICacheToTexture(void) {}
+				virtual void Initialize(void) = 0;
+				virtual void ShutDown(void) = 0;
 				virtual void SetupCacheTexture( Gwen::Controls::Base* control ) = 0;
 				virtual void FinishCacheTexture( Gwen::Controls::Base* control ) = 0;
 				virtual void DrawCachedControlTexture( Gwen::Controls::Base* control ) = 0;
 				virtual void CreateControlCacheTexture( Gwen::Controls::Base* control ) = 0;
 				virtual void UpdateControlCacheTexture( Gwen::Controls::Base* control ) = 0;
-				virtual void SetRenderer( Gwen::Renderer::Base* renderer ) = 0;
+				virtual void SetRenderer( Gwen::Renderer::BaseRender* renderer ) = 0;
 
 		};
 
-		class GWEN_EXPORT Base
+		class GWEN_EXPORT BaseRender
 		{
 			public:
 
-				Base();
-				virtual ~Base();
+				BaseRender(void);
+				virtual ~BaseRender(void);
 
 				virtual void Init(void)  = 0;
 				virtual void ShutDonw(void) = 0;
 				virtual void Begin(void) = 0;
 				virtual void End(void) = 0;
 
-				virtual void SetDrawColor(Color color) { m_Color = color; };
+				virtual void SetDrawColor(Color color);;
 				virtual void DrawFilledRect( Gwen::Rect rect ) =  0 ;
 
 				virtual void StartClip(void) = 0;
 				virtual void EndClip(void) = 0 ;
 
 				virtual void LoadTexture( Gwen::Texture* pTexture ) = 0;
-//Beato Begin: load texture texternaly
-				virtual void LoadTexture(Gwen::Texture* pTexture, 
-					unsigned int w, 
-					unsigned int h,
-					unsigned char bits,
-					const char* col) = 0;
+//Beato Begin: load texture externaly
+				virtual void LoadTexture(Gwen::Texture* pTexture, Uint32 w, Uint32 h, Uint8 bits,
+											const char* col) = 0;
 //Beato End;
 				virtual void FreeTexture( Gwen::Texture* pTexture ) = 0;
 				virtual void DrawTexturedRect( Gwen::Texture* pTexture, Gwen::Rect pTargetRect, float u1 = 0.0f, float v1 = 0.0f, float u2 = 1.0f, float v2 = 1.0f ) = 0;
 				virtual void DrawMissingImage( Gwen::Rect pTargetRect );
-				virtual Gwen::Color PixelColour( Gwen::Texture* pTexture, unsigned int x, unsigned int y, const Gwen::Color & col_default = Gwen::Color( 255, 255, 255, 255 ) ) { return col_default; }
+				virtual Gwen::Color PixelColour(Gwen::Texture* pTexture, unsigned int x, unsigned int y, const Gwen::Color & col_default = Gwen::Color(255, 255, 255, 255));
 
 				virtual ICacheToTexture* GetCTT() { return NULL; }
 
-				virtual void LoadFont( Gwen::Font* pFont ) {};
-				virtual void FreeFont( Gwen::Font* pFont ) {};
-				virtual void RenderText( Gwen::Font* pFont, Gwen::Point pos, const Gwen::UnicodeString & text );
-				virtual Gwen::Point MeasureText( Gwen::Font* pFont, const Gwen::UnicodeString & text );
+				virtual void LoadFont( Gwen::Font::FontBase* pFont ) {};
+				virtual void FreeFont( Gwen::Font::FontBase* pFont ) {};
+				virtual void RenderText( Gwen::Font::FontBase* pFont, Gwen::Point pos, const Gwen::UnicodeString & text );
+				virtual Gwen::Point MeasureText( Gwen::Font::FontBase* pFont, const Gwen::UnicodeString & text );
 
 				// No need to implement these functions in your derived class, but if
 				// you can do them faster than the default implementation it's a good idea to.
@@ -102,8 +103,8 @@ namespace Gwen
 				virtual void DrawLinedRect( Gwen::Rect rect );
 				virtual void DrawPixel( int x, int y );
 				virtual void DrawShavedCornerRect( Gwen::Rect rect, bool bSlight = false );
-				virtual Gwen::Point MeasureText( Gwen::Font* pFont, const Gwen::String & text );
-				virtual void RenderText( Gwen::Font* pFont, Gwen::Point pos, const Gwen::String & text );
+				virtual Gwen::Point MeasureText( Gwen::Font::FontBase* pFont, const Gwen::String & text );
+				virtual void RenderText( Gwen::Font::FontBase* pFont, Gwen::Point pos, const Gwen::String & text );
 
 		protected:
 			Gwen::Color			m_Color;

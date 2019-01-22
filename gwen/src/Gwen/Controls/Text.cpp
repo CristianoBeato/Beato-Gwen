@@ -32,7 +32,6 @@ THE SOFTWARE.
 
 #include "Gwen/Gwen.h"
 #include "Gwen/Controls/Text.h"
-#include "Gwen/Skin.h"
 #include "Gwen/Utility.h"
 
 using namespace Gwen;
@@ -62,12 +61,12 @@ void Text::Layout( Skin::Base* skin )
 	}
 }
 
-Gwen::Font* Text::GetFont()
+Gwen::Font::FontBase* Text::GetFont()
 {
 	return m_Font;
 }
 
-void Text::SetFont( Gwen::Font* pFont )
+void Text::SetFont( Gwen::Font::FontBase* pFont )
 {
 	if ( m_Font == pFont ) { return; }
 
@@ -228,7 +227,7 @@ void Text::RefreshSize()
 		return;
 	}
 
-	Gwen::Point p( 1, GetFont()->size );
+	Gwen::Point p( 1, GetFont()->Size() );
 
 	if ( Length() > 0 )
 	{
@@ -241,7 +240,7 @@ void Text::RefreshSize()
 	if ( p.x == Width() && p.y == Height() )
 	{ return; }
 
-	if ( p.y < GetFont()->size ) { p.y = GetFont()->size; }
+	if ( p.y < GetFont()->Size() ) { p.y = GetFont()->Size(); }
 
 	SetSize( p.x, p.y );
 	InvalidateParent();

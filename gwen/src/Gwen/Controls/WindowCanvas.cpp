@@ -32,7 +32,6 @@ THE SOFTWARE.
 
 #include "Gwen/Gwen.h"
 #include "Gwen/Controls/WindowCanvas.h"
-#include "Gwen/Skin.h"
 #include "Gwen/Controls/Menu.h"
 #include "Gwen/DragAndDrop.h"
 #include "Gwen/ToolTip.h"
@@ -110,7 +109,7 @@ void Gwen::Controls::WindowCanvas::RenderCanvas(void)
 	}
 
 	m_bNeedsRedraw = false;
-	Gwen::Renderer::Base* render = m_Skin->GetRender();
+	Gwen::Renderer::BaseRender* render = m_Skin->GetRender();
 
 	if ( render->BeginContext( this ) )
 	{
@@ -509,7 +508,7 @@ void Gwen::Controls::CustomWindowCanvas::RenderCanvas(void)
 	}
 
 	m_bNeedsRedraw = false;
-	Gwen::Renderer::Base* render = m_Skin->GetRender();
+	Gwen::Renderer::BaseRender* render = m_Skin->GetRender();
 
 	if (render->BeginContext(this))
 	{

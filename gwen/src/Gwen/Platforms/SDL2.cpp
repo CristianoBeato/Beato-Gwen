@@ -108,6 +108,14 @@ void* Gwen::Platform::CreatePlatformWindow( int x, int y, int w, int h, const Gw
 			printf("ERROR: SDL_InitSubSystem %s\n", SDL_GetError());
 			return NULL;
 		}
+	
+	if (flags |= SDL_WINDOW_OPENGL)
+	{
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+		//SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+		SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
+	}
 
 	SDL_Window	*window = SDL_CreateWindow(strWindowTitle.c_str(), x, y, w, h, flags);
 	return static_cast<void*>(window);
@@ -122,10 +130,12 @@ void Gwen::Platform::DestroyPlatformWindow( void* pPtr )
 void Gwen::Platform::MessagePump( void* pWindow, Gwen::Controls::Canvas* ptarget )
 {
 	SDL_Event Event;
-	if (SDL_WaitEvent(&Event) == 0)
-		return;
-
-	EventPump(pWindow, ptarget, Event);
+#if 0
+	if (SDL_WaitEvent(&Event) != 0)
+#else
+	while (SDL_PollEvent(&Event))
+#endif
+		EventPump(pWindow, ptarget, Event);
 }
 
 void Gwen::Platform::EventPump(void * pWindow, Gwen::Controls::Canvas * ptarget, SDL_Event eventHandler)
@@ -299,3 +309,31 @@ int Gwen::Platform::FileStream::printf(const char * fmt, ...)
 	putstring(str);
 	return result;
 }
+
+
+#if 0
+void * Gwen::Platform::Allocators::Alloc(size_t size)
+{
+	return SDL_malloc(size);
+}
+
+void * Gwen::Platform::Allocators::Calloc(unsigned int num, size_t size)
+{
+	return SDL_calloc(num, size);
+}
+
+void * Gwen::Platform::Allocators::Ralloc(void * ptr, size_t size)
+{
+	return SDL_realloc(ptr, size);
+}
+
+void Gwen::Platform::Allocators::Free(void * ptr)
+{
+	return SDL_free(ptr);
+}
+
+void Gwen::Platform::Allocators::Cfree(void * ptr)
+{
+	SDL_stack_free(ptr);
+}
+#endif

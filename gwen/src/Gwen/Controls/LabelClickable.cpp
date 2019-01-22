@@ -31,7 +31,6 @@ THE SOFTWARE.
 #pragma hdrstop
 
 #include "Gwen/Gwen.h"
-#include "Gwen/Skin.h"
 #include "Gwen/Controls/LabelClickable.h"
 
 using namespace Gwen;

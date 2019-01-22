@@ -17,7 +17,7 @@
 #include "Gwen/Controls/ResizableControl.h"
 #include "Gwen/Controls/Modal.h"
 #include "Gwen/Controls/WindowButtons.h"
-#include "Gwen/Skin.h"
+#include "Gwen/Skins/Skin.h"
 
 
 namespace Gwen

@@ -32,7 +32,6 @@ THE SOFTWARE.
 
 #include "Gwen/Gwen.h"
 #include "Gwen/Controls/TextBox.h"
-#include "Gwen/Skin.h"
 #include "Gwen/Anim.h"
 #include "Gwen/Utility.h"
 #include "Gwen/Platforms/Platform.h"
@@ -418,7 +417,7 @@ void TextBox::MakeCaratVisible()
 	{
 		int iCaratPos = m_Text->GetCharacterPosition( m_iCursorPos ).x;
 		int iRealCaratPos = iCaratPos + m_Text->X();
-		int iSlidingZone = m_Text->GetFont()->size + 1; //Width()*0.1f
+		int iSlidingZone = m_Text->GetFont()->Size() + 1; //Width()*0.1f
 
 		// If the carat is already in a semi-good position, leave it.
 		if ( iRealCaratPos >= iSlidingZone && iRealCaratPos <= Width() - iSlidingZone )
@@ -534,7 +533,7 @@ void TextBoxMultiline::Render( Skin::Base* skin )
 		int iFirstChar = 0;
 		int iLastChar = 0;
 		skin->GetRender()->SetDrawColor( Gwen::Color( 50, 170, 255, 200 ) );
-		m_rectSelectionBounds.h = m_Text->GetFont()->size + 2;
+		m_rectSelectionBounds.h = m_Text->GetFont()->Size() + 2;
 
 		for(int iLine = iSelectionStartLine; iLine <= iSelectionEndLine; ++iLine)
 		{

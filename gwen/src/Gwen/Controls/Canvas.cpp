@@ -32,7 +32,6 @@ THE SOFTWARE.
 
 #include "Gwen/Gwen.h"
 #include "Gwen/Controls/Canvas.h"
-#include "Gwen/Skin.h"
 #include "Gwen/Controls/Menu.h"
 #include "Gwen/DragAndDrop.h"
 #include "Gwen/ToolTip.h"
@@ -64,7 +63,7 @@ Canvas::~Canvas()
 void Canvas::RenderCanvas()
 {
 	DoThink();
-	Gwen::Renderer::Base* render = m_Skin->GetRender();
+	Gwen::Renderer::BaseRender* render = m_Skin->GetRender();
 	render->Begin();
 	RecurseLayout( m_Skin );
 	render->SetClipRegion( GetBounds() );
@@ -96,7 +95,7 @@ void Canvas::OnBoundsChanged( Gwen::Rect oldBounds )
 
 void Canvas::UpdateContext()
 {
-	Gwen::Renderer::Base* render = m_Skin->GetRender();
+	Gwen::Renderer::BaseRender* render = m_Skin->GetRender();
 	render->Init();
 }
 

@@ -3,7 +3,7 @@
 GWEN
 
 Copyright (c) 2010 Facepunch Studios
-Copyright (c) 2017-2018 Cristiano Beato
+Copyright (c) 2017-2019 Cristiano Beato
 
 MIT License
 
@@ -30,7 +30,6 @@ THE SOFTWARE.
 #define GWEN_SKINS_BASE_H
 
 #include "Gwen/Controls/Base.h"
-#include "Gwen/Texture.h"
 #include "Gwen/Skins/Texturing.h"
 
 #include <map>
@@ -39,6 +38,7 @@ namespace tinyxml2
 {
 	class XMLElement;
 }
+
 namespace Gwen
 {
 	namespace Skin
@@ -46,7 +46,7 @@ namespace Gwen
 		class SkinBase : public Gwen::Skin::Base
 		{
 		public:
-			SkinBase(Renderer::Base* renderer);
+			SkinBase(Renderer::BaseRender* renderer);
 			~SkinBase(void);
 
 			struct Textures_t
@@ -304,12 +304,12 @@ namespace Gwen
 				Texturing::Bordered	Shadow;
 				Texturing::Bordered	Tooltip;
 			} Textures;
-//Beato Begin
+
 			//init skin from file
-			virtual bool Init(const TextObject & SkinXml) override;
+			virtual void Init(const char* skinPath);
 			//init skin from source 
-			virtual bool Init(const char* buff, size_t size) override;
-//Beato End
+			virtual void Init(const char* buff, size_t size);
+
 			virtual void Clear(void);
 			virtual void DrawButton(Controls::Base* control, bool bDepressed, bool bHovered, bool bDisabled);
 			virtual void DrawMenuItem(Controls::Base* control, bool bSubmenuOpen, bool bChecked);
@@ -344,7 +344,7 @@ namespace Gwen
 			virtual void DrawNumericUpDownButton(Controls::Base* control, bool bDepressed, bool bUp);
 			virtual void DrawStatusBar(Controls::Base* control);
 			virtual void DrawTreeButton(Controls::Base* control, bool bOpen);
-			void DrawColorDisplay(Controls::Base* control, Gwen::Color color);
+			virtual void DrawColorDisplay(Controls::Base* control, Gwen::Color color);
 			virtual void DrawModalControl(Controls::Base* control);
 			virtual void DrawMenuDivider(Controls::Base* control);
 			virtual void DrawTreeControl(Controls::Base* control);
@@ -352,15 +352,15 @@ namespace Gwen
 			virtual void DrawWindowMaximizeButton(Controls::Base* control, bool bDepressed, bool bHovered, bool bDisabled, bool bMaximized);
 			virtual void DrawWindowMinimizeButton(Controls::Base* control, bool bDepressed, bool bHovered, bool bDisabled);
 			virtual void DrawSlideButton(Controls::Base* control, bool bDepressed, bool bHorizontal);
-			void DrawTreeNode(Controls::Base* ctrl, bool bOpen, bool bSelected, int iLabelHeight, int iLabelWidth, int iHalfWay, int iLastBranch, bool bIsRoot);
-			void DrawCategoryHolder(Controls::Base* ctrl);
-			void DrawCategoryInner(Controls::Base* ctrl, bool bCollapsed);
+			virtual void DrawTreeNode(Controls::Base* ctrl, bool bOpen, bool bSelected, int iLabelHeight, int iLabelWidth, int iHalfWay, int iLastBranch, bool bIsRoot);
+			virtual void DrawCategoryHolder(Controls::Base* ctrl);
+			virtual void DrawCategoryInner(Controls::Base* ctrl, bool bCollapsed);
 
 		protected:
 //Beato begin:
 			//Texture m_Texture;
 			static Texture*				m_missingTexture;
-			std::map<Uint16, Texture*>	m_skinTextures;
+			std::map<size_t, Texture*>	m_skinTextures;
 //Beato end
 
 			void	LoadTexture(const String textName, String textPath);

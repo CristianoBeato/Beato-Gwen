@@ -53,9 +53,10 @@ void RichLabel::AddLineBreak()
 	m_TextBlocks.push_back( t );
 }
 
-void RichLabel::AddText( const Gwen::TextObject & text, Gwen::Color color, Gwen::Font* font )
+void RichLabel::AddText( const Gwen::TextObject & text, Gwen::Color color, Gwen::Font::FontBase* font )
 {
-	if ( text.length() == 0 ) { return; }
+	if ( text.length() == 0 )
+		return;
 
 	Gwen::Utility::Strings::UnicodeList lst;
 	Gwen::Utility::Strings::Split( text.GetUnicode(), L"\n", lst, false );
@@ -81,7 +82,7 @@ bool RichLabel::SizeToChildren( bool w, bool h )
 	return BaseClass::SizeToChildren( w, h );
 }
 
-void RichLabel::SplitLabel( const Gwen::UnicodeString & text, Gwen::Font* pFont, const DividedText & txt, int & x, int & y, int & lineheight )
+void RichLabel::SplitLabel( const Gwen::UnicodeString & text, Gwen::Font::FontBase* pFont, const DividedText & txt, int & x, int & y, int & lineheight )
 {
 	Gwen::Utility::Strings::UnicodeList lst;
 	Gwen::Utility::Strings::Split( text, L" ", lst, true );
@@ -139,7 +140,7 @@ void RichLabel::CreateLabel( const Gwen::UnicodeString & text, const DividedText
 	//
 	// Use default font or is one set?
 	//
-	Gwen::Font* pFont = GetSkin()->GetDefaultFont();
+	Gwen::Font::FontBase* pFont = GetSkin()->GetDefaultFont();
 
 	if ( txt.font ) { pFont = txt.font; }
 

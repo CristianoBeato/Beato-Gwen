@@ -21,8 +21,8 @@ namespace Gwen
 
 				GWEN_CONTROL( Text, Controls::Base );
 
-				virtual ~Text();
-				Gwen::Font* GetFont();
+				virtual ~Text(void);
+				Gwen::Font::FontBase* GetFont(void);
 
 				void SetString( const TextObject & str );
 
@@ -31,7 +31,7 @@ namespace Gwen
 
 				void RefreshSize();
 
-				void SetFont( Gwen::Font* pFont );
+				void SetFont( Gwen::Font::FontBase* pFont );
 
 				const TextObject & GetText() const { return m_String; }
 
@@ -42,7 +42,7 @@ namespace Gwen
 				// @remark this function is necessary to implement multiline selection
 				virtual Gwen::Rect GetLineBox( int i ); 
 
-				int Length() const { return ( int ) m_String.GetUnicode().size(); }
+				int Length(void) const { return ( int ) m_String.GetUnicode().size(); }
 
 				virtual void SetTextColor( const Gwen::Color & col ) { m_Color = col; }
 				virtual void SetTextColorOverride( const Gwen::Color & col ) { m_ColorOverride = col; }
@@ -69,12 +69,12 @@ namespace Gwen
 			
 			private: 
 
-				virtual void RefreshSizeWrap();
+				virtual void RefreshSizeWrap(void);
 
-				Gwen::TextObject	m_String;
-				Gwen::Font*			m_Font;
-				Gwen::Color			m_Color;
-				Gwen::Color			m_ColorOverride;
+				Gwen::TextObject			m_String;
+				Gwen::Font::FontBase*		m_Font;
+				Gwen::Color					m_Color;
+				Gwen::Color					m_ColorOverride;
 
 				bool				m_bWrap;
 				bool				m_bTextChanged;

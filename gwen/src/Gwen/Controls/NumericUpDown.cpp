@@ -32,7 +32,6 @@ THE SOFTWARE.
 
 #include "Gwen/Gwen.h"
 #include "Gwen/Utility.h"
-#include "Gwen/Skin.h"
 #include "Gwen/Controls/NumericUpDown.h"
 
 using namespace Gwen;

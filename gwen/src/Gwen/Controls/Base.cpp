@@ -30,15 +30,7 @@ THE SOFTWARE.
 #include "precompiled.h"
 #pragma hdrstop
 
-#include "Gwen/Controls/Base.h"
-#include "Gwen/Controls/Label.h"
 #include "Gwen/Gwen.h"
-#include "Gwen/Renderers/BaseRender.h"
-#include "Gwen/Skin.h"
-#include "Gwen/Platforms/Platform.h"
-#include "Gwen/DragAndDrop.h"
-#include "Gwen/ToolTip.h"
-#include "Gwen/Utility.h"
 #include <list>
 
 #ifndef GWEN_NO_ANIMATION
@@ -76,7 +68,7 @@ Base::Base( Base* pParent, const Gwen::String & Name )
 	m_bIncludeInSize = true;
 }
 
-Base::~Base()
+Base::~Base(void)
 {
 	{
 		Canvas* canvas = GetCanvas();
@@ -477,7 +469,7 @@ void Base::Render( Gwen::Skin::Base* /*skin*/ )
 
 void Base::DoCacheRender( Gwen::Skin::Base* skin, Gwen::Controls::Base* pMaster )
 {
-	Gwen::Renderer::Base* render = skin->GetRender();
+	Gwen::Renderer::BaseRender* render = skin->GetRender();
 	Gwen::Renderer::ICacheToTexture* cache = render->GetCTT();
 
 	if ( !cache ) { return; }
@@ -546,7 +538,7 @@ void Base::DoRender( Gwen::Skin::Base* skin )
 
 	// Do think
 	Think();
-	Gwen::Renderer::Base* render = skin->GetRender();
+	Gwen::Renderer::BaseRender* render = skin->GetRender();
 
 	if ( render->GetCTT() && ShouldCacheToTexture() )
 	{
@@ -559,7 +551,7 @@ void Base::DoRender( Gwen::Skin::Base* skin )
 
 void Base::RenderRecursive( Gwen::Skin::Base* skin, const Gwen::Rect & cliprect )
 {
-	Gwen::Renderer::Base* render = skin->GetRender();
+	Gwen::Renderer::BaseRender* render = skin->GetRender();
 	Gwen::Point pOldRenderOffset = render->GetRenderOffset();
 	render->AddRenderOffset( cliprect );
 	RenderUnder( skin );

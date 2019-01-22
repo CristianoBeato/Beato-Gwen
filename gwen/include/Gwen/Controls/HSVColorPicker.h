@@ -10,10 +10,8 @@
 
 #include "Gwen/Controls/Base.h"
 #include "Gwen/Gwen.h"
-#include "Gwen/Skin.h"
 #include "Gwen/Controls/ColorControls.h"
 #include "Gwen/Controls/ColorPicker.h"
-
 
 namespace Gwen
 {

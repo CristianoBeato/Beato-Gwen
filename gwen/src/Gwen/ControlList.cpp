@@ -30,7 +30,6 @@ THE SOFTWARE.
 #include "precompiled.h"
 #pragma hdrstop
 
-#include "Gwen/Gwen.h"
 #include "Gwen/ControlList.h"
 
 using namespace Gwen;

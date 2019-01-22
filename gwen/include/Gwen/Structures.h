@@ -3,7 +3,7 @@
 GWEN
 
 Copyright (c) 2010 Facepunch Studios
-Copyright (c) 2017-2018 Cristiano Beato
+Copyright (c) 2017-2019 Cristiano Beato
 
 
 MIT License

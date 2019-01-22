@@ -36,16 +36,16 @@ using namespace Gwen;
 using namespace Gwen::Event;
 
 
-Handler::Handler()
+Handler::Handler(void)
 {
 }
 
-Handler::~Handler()
+Handler::~Handler(void)
 {
 	CleanLinks();
 }
 
-void Handler::CleanLinks()
+void Handler::CleanLinks(void)
 {
 	// Tell all the callers that we're dead
 	std::list<Caller*>::iterator iter = m_Callers.begin();
@@ -70,16 +70,16 @@ void Handler::UnRegisterCaller( Caller* pCaller )
 }
 
 
-Caller::Caller()
+Caller::Caller(void)
 {
 }
 
-Caller::~Caller()
+Caller::~Caller(void)
 {
 	CleanLinks();
 }
 
-void Caller::CleanLinks()
+void Caller::CleanLinks(void)
 {
 	std::list<handler>::iterator iter;
 

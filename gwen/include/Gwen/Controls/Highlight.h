@@ -10,7 +10,6 @@
 
 #include "Gwen/Renderers/BaseRender.h"
 #include "Gwen/Controls/Base.h"
-#include "Gwen/Skin.h"
 
 namespace Gwen
 {

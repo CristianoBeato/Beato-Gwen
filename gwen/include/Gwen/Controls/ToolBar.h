@@ -4,13 +4,12 @@
 	See license in Gwen.h
 */
 
-#pragma once
+
 #ifndef GWEN_CONTROLS_TOOLBAR_H
 #define GWEN_CONTROLS_TOOLBAR_H
 
 #include "Gwen/Renderers/BaseRender.h"
 #include "Gwen/Controls/Base.h"
-#include "Gwen/Skin.h"
 
 namespace Gwen
 {
